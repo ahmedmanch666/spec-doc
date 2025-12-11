@@ -9,6 +9,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { useToast } from '@/hooks/use-toast';
 import { Phone, Mail, MapPin } from 'lucide-react';
+import { useMutation } from '@tanstack/react-query';
+import { submitContactForm } from '@/lib/api';
 
 const contactSchema = z.object({
   name: z.string().min(2, 'Name is required'),
@@ -31,13 +33,26 @@ export default function Contact() {
     },
   });
 
+  const mutation = useMutation({
+    mutationFn: submitContactForm,
+    onSuccess: () => {
+      toast({
+        title: t('cta.success'),
+        description: "We'll get back to you shortly.",
+      });
+      form.reset();
+    },
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "Failed to send message. Please try again.",
+        variant: "destructive",
+      });
+    },
+  });
+
   const onSubmit = (data: ContactFormValues) => {
-    console.log(data);
-    toast({
-      title: t('cta.success'),
-      description: "We'll get back to you shortly.",
-    });
-    form.reset();
+    mutation.mutate(data);
   };
 
   return (
@@ -47,11 +62,11 @@ export default function Contact() {
         <div className="space-y-12">
           <div>
             <h1 className="text-5xl md:text-6xl font-bold mb-6 text-foreground">
-              {language === 'en' ? 'Let’s Talk' : 'تحدث معنا'}
+              {language === 'en' ? "Let's Talk" : 'تحدث معنا'}
             </h1>
             <p className="text-xl text-muted-foreground leading-relaxed">
               {language === 'en' 
-                ? 'Have a project in mind? We would love to hear from you. Send us a message and we will get back to you as soon as possible.'
+                ? "Have a project in mind? We would love to hear from you. Send us a message and we will get back to you as soon as possible."
                 : 'هل لديك مشروع في ذهنك؟ نود أن نسمع منك. أرسل لنا رسالة وسنعود إليك في أقرب وقت ممكن.'}
             </p>
           </div>
@@ -63,7 +78,7 @@ export default function Contact() {
               </div>
               <div>
                 <h3 className="text-lg font-bold mb-1">Email Us</h3>
-                <a href="mailto:hello@eibs.com" className="text-muted-foreground hover:text-primary transition-colors">hello@eibs.com</a>
+                <a href="mailto:hello@eibs.com" className="text-muted-foreground hover:text-primary transition-colors" data-testid="link-email">hello@eibs.com</a>
               </div>
             </div>
             
@@ -73,7 +88,7 @@ export default function Contact() {
               </div>
               <div>
                 <h3 className="text-lg font-bold mb-1">Call Us</h3>
-                <a href="tel:+966500000000" className="text-muted-foreground hover:text-primary transition-colors">+966 50 000 0000</a>
+                <a href="tel:+966500000000" className="text-muted-foreground hover:text-primary transition-colors" data-testid="link-phone">+966 50 000 0000</a>
               </div>
             </div>
             
@@ -100,7 +115,7 @@ export default function Contact() {
                   <FormItem>
                     <FormLabel>{t('form.name')}</FormLabel>
                     <FormControl>
-                      <Input placeholder="John Doe" {...field} className="h-12" />
+                      <Input placeholder="John Doe" {...field} className="h-12" data-testid="input-name" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -114,7 +129,7 @@ export default function Contact() {
                   <FormItem>
                     <FormLabel>{t('form.email')}</FormLabel>
                     <FormControl>
-                      <Input placeholder="john@example.com" {...field} className="h-12" />
+                      <Input placeholder="john@example.com" {...field} className="h-12" data-testid="input-email" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -128,15 +143,21 @@ export default function Contact() {
                   <FormItem>
                     <FormLabel>{t('form.message')}</FormLabel>
                     <FormControl>
-                      <Textarea placeholder="Tell us about your project..." {...field} className="min-h-[150px] resize-none" />
+                      <Textarea placeholder="Tell us about your project..." {...field} className="min-h-[150px] resize-none" data-testid="input-message" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
               
-              <Button type="submit" size="lg" className="w-full h-12 font-bold bg-primary hover:bg-primary/90 text-white" disabled={form.formState.isSubmitting}>
-                {form.formState.isSubmitting ? t('cta.sending') : t('cta.submit')}
+              <Button 
+                type="submit" 
+                size="lg" 
+                className="w-full h-12 font-bold bg-primary hover:bg-primary/90 text-white" 
+                disabled={mutation.isPending}
+                data-testid="button-submit"
+              >
+                {mutation.isPending ? t('cta.sending') : t('cta.submit')}
               </Button>
             </form>
           </Form>

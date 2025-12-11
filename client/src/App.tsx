@@ -16,7 +16,7 @@ import NotFound from "@/pages/not-found";
 // Placeholder components for other pages
 const PlaceholderPage = ({ title }: { title: string }) => (
   <div className="container-custom py-24 min-h-[60vh] flex flex-col items-center justify-center text-center">
-    <h1 className="text-4xl font-bold mb-4">{title}</h1>
+    <h1 className="text-4xl font-bold mb-4" style={{ color: '#111111' }}>{title}</h1>
     <p className="text-muted-foreground max-w-md">
       This page is under construction as part of the prototype.
     </p>
@@ -42,52 +42,46 @@ function Router() {
       </Route>
 
       {/* Main Routes - With Layout */}
-      <Route path="/:rest*">
-        <Layout>
-          <Switch>
-            <Route path="/" component={Home} />
-            <Route path="/about">
-              <PlaceholderPage title="About Us" />
-            </Route>
-            <Route path="/brand-strategy">
-              <PlaceholderPage title="Brand Strategy" />
-            </Route>
-            <Route path="/packaging">
-              <PlaceholderPage title="Packaging" />
-            </Route>
-            <Route path="/brand-design">
-              <PlaceholderPage title="Brand Design" />
-            </Route>
-            <Route path="/advertising">
-              <PlaceholderPage title="Advertising" />
-            </Route>
-            <Route path="/digital-marketing">
-              <PlaceholderPage title="Digital Marketing" />
-            </Route>
-            <Route path="/web">
-              <PlaceholderPage title="Web Design" />
-            </Route>
-            
-            <Route path="/case-studies" component={CaseStudies} />
-            
-            <Route path="/blog">
-              <PlaceholderPage title="Blog" />
-            </Route>
-            
-            <Route path="/contact" component={Contact} />
-            
-            {/* Dynamic Routes */}
-            <Route path="/case/:slug">
-              {(params) => <PlaceholderPage title={`Case Study: ${params.slug}`} />}
-            </Route>
-            <Route path="/post/:slug">
-              {(params) => <PlaceholderPage title={`Blog Post: ${params.slug}`} />}
-            </Route>
-            
-            <Route component={NotFound} />
-          </Switch>
-        </Layout>
+      <Route path="/" component={Home} />
+      <Route path="/about">
+        <Layout><PlaceholderPage title="About Us" /></Layout>
       </Route>
+      <Route path="/brand-strategy">
+        <Layout><PlaceholderPage title="Brand Strategy" /></Layout>
+      </Route>
+      <Route path="/packaging">
+        <Layout><PlaceholderPage title="Packaging" /></Layout>
+      </Route>
+      <Route path="/brand-design">
+        <Layout><PlaceholderPage title="Brand Design" /></Layout>
+      </Route>
+      <Route path="/advertising">
+        <Layout><PlaceholderPage title="Advertising" /></Layout>
+      </Route>
+      <Route path="/digital-marketing">
+        <Layout><PlaceholderPage title="Digital Marketing" /></Layout>
+      </Route>
+      <Route path="/web">
+        <Layout><PlaceholderPage title="Web Design" /></Layout>
+      </Route>
+      
+      <Route path="/case-studies" component={CaseStudies} />
+      
+      <Route path="/blog">
+        <Layout><PlaceholderPage title="Blog" /></Layout>
+      </Route>
+      
+      <Route path="/contact" component={Contact} />
+      
+      {/* Dynamic Routes */}
+      <Route path="/case/:slug">
+        {(params) => <Layout><PlaceholderPage title={`Case Study: ${params.slug}`} /></Layout>}
+      </Route>
+      <Route path="/post/:slug">
+        {(params) => <Layout><PlaceholderPage title={`Blog Post: ${params.slug}`} /></Layout>}
+      </Route>
+      
+      <Route component={NotFound} />
     </Switch>
   );
 }

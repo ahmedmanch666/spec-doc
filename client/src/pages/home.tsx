@@ -1,11 +1,13 @@
 import React from 'react';
 import { useI18n } from '@/lib/i18n';
-import { services, caseStudies, blogPosts } from '@/data/mock';
+import { services } from '@/data/mock';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ArrowRight, ArrowUpRight, Megaphone, Monitor, Package, PenTool, Target, BarChart } from 'lucide-react';
 import { Link } from 'wouter';
 import { motion } from 'framer-motion';
+import { useQuery } from '@tanstack/react-query';
+import { getFeaturedCaseStudies, getBlogPosts } from '@/lib/api';
 
 const iconMap: Record<string, any> = {
   Target,
@@ -18,6 +20,16 @@ const iconMap: Record<string, any> = {
 
 export default function Home() {
   const { t, language, direction } = useI18n();
+
+  const { data: featuredCases = [] } = useQuery({
+    queryKey: ['featured-case-studies', language],
+    queryFn: () => getFeaturedCaseStudies(language),
+  });
+
+  const { data: blogPosts = [] } = useQuery({
+    queryKey: ['blog-posts', language],
+    queryFn: () => getBlogPosts(language),
+  });
 
   const isRtl = direction === 'rtl';
 
@@ -62,12 +74,12 @@ export default function Home() {
             </p>
             <div className="flex flex-wrap gap-4 pt-4">
               <Link href="/contact">
-                <Button size="lg" className="rounded-full px-8 text-lg font-bold h-14 bg-primary text-white hover:bg-primary/90">
+                <Button size="lg" className="rounded-full px-8 text-lg font-bold h-14 bg-primary text-white hover:bg-primary/90" data-testid="button-contact">
                   {t('cta.lets_talk')}
                 </Button>
               </Link>
               <Link href="/case-studies">
-                <Button variant="outline" size="lg" className="rounded-full px-8 text-lg font-bold h-14 border-2 border-primary text-primary hover:bg-primary hover:text-white">
+                <Button variant="outline" size="lg" className="rounded-full px-8 text-lg font-bold h-14 border-2 border-primary text-primary hover:bg-primary hover:text-white" data-testid="button-view-cases">
                   {t('cta.view_case')}
                 </Button>
               </Link>
@@ -97,7 +109,7 @@ export default function Home() {
         <div className="flex justify-between items-end mb-12">
            <h2 className="text-3xl md:text-4xl font-bold">{t('section.services')}</h2>
            <Link href="/contact">
-             <a className="hidden md:flex items-center gap-2 text-primary font-bold hover:gap-3 transition-all">
+             <a className="hidden md:flex items-center gap-2 text-primary font-bold hover:gap-3 transition-all" data-testid="link-view-all-services">
                {t('cta.view_all')} {isRtl ? <ArrowRight className="rotate-180" /> : <ArrowRight />}
              </a>
            </Link>
@@ -108,7 +120,7 @@ export default function Home() {
             const Icon = iconMap[service.icon];
             return (
               <Link key={service.id} href={`/${service.id}`}>
-                <a className="group">
+                <a className="group" data-testid={`card-service-${service.id}`}>
                   <Card className="h-full border border-border hover:border-primary/50 transition-all duration-300 hover:shadow-lg hover:-translate-y-1 bg-card">
                     <CardHeader>
                       <div className="w-12 h-12 rounded-xl bg-primary/5 flex items-center justify-center text-primary mb-4 group-hover:bg-primary group-hover:text-white transition-colors">
@@ -136,7 +148,7 @@ export default function Home() {
         <div className="container-custom mb-12 flex justify-between items-center">
           <h2 className="text-3xl md:text-4xl font-bold">{t('section.featured_work')}</h2>
            <Link href="/case-studies">
-             <Button variant="link" className="text-primary font-bold text-lg p-0 h-auto">
+             <Button variant="link" className="text-primary font-bold text-lg p-0 h-auto" data-testid="button-view-all-cases">
                {t('cta.view_all')}
              </Button>
            </Link>
@@ -144,12 +156,12 @@ export default function Home() {
         
         <div className="container-custom">
            <div className="flex gap-8 overflow-x-auto pb-8 snap-x scrollbar-hide -mx-6 px-6 md:mx-0 md:px-0">
-              {caseStudies.map((item) => (
+              {featuredCases.map((item) => (
                 <Link key={item.id} href={`/case/${item.slug}`}>
-                  <a className="min-w-[300px] md:min-w-[400px] snap-center group">
+                  <a className="min-w-[300px] md:min-w-[400px] snap-center group" data-testid={`card-case-${item.id}`}>
                     <div className="aspect-[4/3] rounded-2xl overflow-hidden mb-6 relative shadow-md">
                       <img 
-                        src={item.image} 
+                        src={item.coverImage} 
                         alt={item.title} 
                         className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                       />
@@ -158,7 +170,7 @@ export default function Home() {
                     <div>
                       <div className="flex gap-2 mb-3">
                          {item.services.slice(0, 2).map(s => (
-                           <span key={s} className="text-xs font-bold uppercase tracking-wider text-primary bg-primary/5 px-2 py-1 rounded-md">
+                           <span key={s} className="text-xs font-bold uppercase tracking-wider text-primary bg-primary/5 px-2 py-1 rounded-md" data-testid={`text-service-${s}`}>
                              {s}
                            </span>
                          ))}
@@ -183,21 +195,21 @@ export default function Home() {
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-           {blogPosts.map((post) => (
+           {blogPosts.slice(0, 3).map((post) => (
              <Link key={post.id} href={`/post/${post.slug}`}>
-               <a className="group">
+               <a className="group" data-testid={`card-blog-${post.id}`}>
                  <div className="aspect-[16/10] rounded-2xl overflow-hidden mb-6 bg-muted">
                     <img 
-                      src={post.image} 
+                      src={post.coverImage} 
                       alt={post.title}
                       className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" 
                     />
                  </div>
                  <div className="space-y-3">
                    <div className="flex items-center gap-4 text-xs text-muted-foreground font-medium uppercase tracking-wider">
-                     <span>{post.date}</span>
+                     <span>{new Date(post.publishedAt || post.createdAt).toLocaleDateString()}</span>
                      <span className="w-1 h-1 rounded-full bg-primary" />
-                     <span className="text-primary">{post.tags[0]}</span>
+                     <span className="text-primary">{post.tags?.[0]}</span>
                    </div>
                    <h3 className="text-xl font-bold leading-tight group-hover:text-primary transition-colors">
                      {post.title}
@@ -225,7 +237,7 @@ export default function Home() {
                 : "دعنا نبني شيئاً استثنائياً معاً. تواصل معنا لمناقشة مشروعك القادم."}
             </p>
             <Link href="/contact">
-              <Button size="lg" className="h-14 px-10 rounded-full bg-white text-primary hover:bg-white/90 font-bold text-lg shadow-xl hover:shadow-2xl transition-all hover:-translate-y-1">
+              <Button size="lg" className="h-14 px-10 rounded-full bg-white text-primary hover:bg-white/90 font-bold text-lg shadow-xl hover:shadow-2xl transition-all hover:-translate-y-1" data-testid="button-contact-cta">
                 {t('cta.lets_talk')}
               </Button>
             </Link>
