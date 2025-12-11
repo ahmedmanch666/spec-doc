@@ -1,0 +1,379 @@
+# EIBS — UI & CMS Specification (Red/White, AR/EN)
+
+> جاهز للتنفيذ والربط مباشرة (Design → Dev handoff). يشمل السايت العام + الداشبورد + نماذج البيانات + المفاتيح ثنائية اللغة + التوكنز.
+
+---
+
+## 0) Design Tokens (Global)
+
+* **Colors**
+
+  * `--color-red: #D90429`
+  * `--color-red-hover: #A3031F`
+  * `--color-text: #111111`
+  * `--color-text-secondary: #5A5A5A`
+  * `--color-border: #EEEEEE`
+  * `--color-bg: #FFFFFF`
+* **Typography**
+
+  * Arabic: *Cairo* / *IBM Plex Sans Arabic*
+  * English: *Inter* / *Poppins*
+  * Scale (desktop): H1 56, H2 40, H3 28, Body 16, Small 14
+  * Line-height: 1.3 (headings), 1.6 (body)
+* **Radius & Elevation**
+
+  * Radius 12px (cards/buttons)
+  * Shadow: `0 8px 24px rgba(0,0,0,0.06)`
+* **Spacing**
+
+  * 8 / 12 / 16 / 24 / 32 / 48 / 64
+* **Grid**
+
+  * Container 1200px, 12-col grid, gutter 24px
+* **Breakpoints**
+
+  * `sm: 360` `md: 768` `lg: 1024` `xl: 1280`
+
+---
+
+## 1) i18n Keys (AR/EN)
+
+> مفاتيح موحّدة لكل النصوص. أمثلة رئيسية:
+
+```
+nav.about: "About" | "من نحن"
+nav.brand_strategy: "Brand Strategy" | "إستراتيجية العلامة"
+nav.packaging: "Packaging" | "تصميم العبوات"
+nav.brand_design: "Brand Design" | "تصميم الهوية"
+nav.advertising: "Advertising" | "الإعلانات"
+nav.digital_marketing: "Digital Marketing" | "التسويق الرقمي"
+nav.web: "Web" | "تصميم المواقع"
+nav.case_studies: "Case Studies" | "دراسات الحالة"
+nav.blog: "Blog" | "المدونة"
+nav.contact: "Contact" | "تواصل معنا"
+cta.login: "Log in" | "تسجيل الدخول"
+cta.lets_talk: "Let’s Talk" | "تحدث معنا"
+cta.view_case: "View Case" | "شاهد الحالة"
+```
+
+> اتجاه الصفحة يتبدّل حسب اللغة: EN=LTR, AR=RTL.
+
+---
+
+## 2) Public Site — Pages & Sections
+
+### 2.1 Header (Sticky)
+
+* يسار/يمين حسب اللغة: **Logo (red)**، Navigation، Language Switch `EN | AR`، زر **Log in** (أحمر Filled).
+* Active link: underline 3px red.
+
+### 2.2 Home
+
+1. **Hero (white)**
+
+   * H1 أسود قوي، Subline رمادي، CTA أحمر Filled + CTA Outline.
+   * Accent line أحمر رفيع تحت العنوان.
+2. **Services Preview** (بطاقات بحد رفيع #EEE)، تنقل للأقسام أدناه.
+3. **Portfolio Strip (Featured)**: سلايدر أفقي لـ 5 أعمال مميزة.
+4. **Blog Preview**: 3 بطاقات.
+5. **Contact CTA**: نص قوي + زر أحمر.
+6. **Footer**: بنفس توزيع السايت ماب (القائمة في الصورة).
+
+### 2.3 About
+
+* 2 أعمدة: صورة/استوديو + قائمة روابط:
+  Who we are / How we work / Careers / Social Responsibility.
+
+### 2.4 Brand Strategy
+
+* Grid 3×2 بطاقات للخدمات:
+  Brand Development / Positioning / Architecture / Rebranding / Brand Story / Environment Branding / Consultation.
+
+### 2.5 Packaging
+
+* قسمين: Packaging Design + Product Shape Design مع موكابس.
+
+### 2.6 Brand Design
+
+* Grid 3×2: Naming / Logo / Identity / Guidelines / Catalogue / Company Profile.
+
+### 2.7 Advertising
+
+* Poster فيديو (mute) + قائمة: Photography / Film Making, TVCs / Wayfinding / 3D / Billboards & Airport / Ads Design.
+
+### 2.8 Digital Marketing
+
+* 4 بطاقات: SEO / Social / Paid / Influencer.
+
+### 2.9 Web
+
+* Mockup Laptop + نص: UI/UX, Web Design & Development.
+
+### 2.10 Case Studies (Portfolio Landing)
+
+* **Sticky Filters**: Industry, Service, Format, Outcome, Sort.
+* **Masonry Grid** (3 cols desktop).
+* **Live counters** أعلى الشبكة.
+* Card: صورة/فيديو + Badges (industry/service) + Title + meta (Client · Year · Region) + CTA نصي أحمر.
+
+### 2.11 Case Study Detail
+
+* Header: Media hero + Sidebar meta (Client/Industry/Region/Year/Services/Deliverables/Timeline/Links).
+* Sections: Challenge / Strategy / Solution (Brand, Packaging, Social/Video, Web, 3D) / Execution / Impact (KPIs) / Gallery / Press Kit / Prev-Next.
+
+### 2.12 Blog
+
+* List (بطاقات) + Filters (Category/Format).
+* Detail: Cover, body، ذات صُور داخلية.
+
+### 2.13 Contact
+
+* Form (Name/Email/Message) + Email/Phones text links.
+* Validation/Success states.
+
+---
+
+## 3) Auth — Login (Public → CMS)
+
+* `/admin/login` صفحة كاملة **بيضاء**: Logo أحمر، حقول Email/Password، Remember me، Forgot password، زر **Log in** أحمر.
+* سويتشر لغة `EN | AR`.
+* حالات: Loading / Error / Locked / Success (redirect `/admin`).
+
+---
+
+## 4) CMS Dashboard — Information Architecture
+
+**Sidebar (EN يسار / AR يمين):**
+
+* Dashboard
+* Pages
+* Portfolio
+* Blog
+* Media
+* Forms
+* **Theme**
+* **Typography**
+* **Widgets**
+* Users & Roles
+* Settings
+
+**Topbar:**
+
+* Breadcrumb + Search + Notifications + User Menu (Profile/Logout)
+
+### 4.1 Dashboard (Widgets Overview)
+
+* KPIs Cards: Pages, Posts, Portfolio, Media, Drafts, Pending.
+* Recent Activity (log).
+* Quick Actions: New Page / New Post / New Case / Upload.
+
+### 4.2 Theme Panel
+
+* Primary Red (picker مع درج hover) — باقي الألوان ثابتة.
+* Buttons Preview (Filled/Outline/Hover/Focus).
+* Apply / Preview on site.
+
+### 4.3 Typography Panel
+
+* اختيار خطوط AR/EN + أحجام H1–H6/Body/Small (sliders) مع Live preview ثنائي اللغة.
+
+### 4.4 Widgets Library
+
+* Drag & Drop إلى Canvas:
+  Hero / Service Grid / Portfolio Mosaic / Case Carousel / Blog List / Contact Form.
+* لكل ويدج إعدادات (عنوان/وصف/CTA/مصدر البيانات/عدد العناصر).
+
+### 4.5 Pages
+
+* Table: Title, Slug, Status (Draft/Published), Lang, Updated.
+* Edit Layout → Canvas (grid overlay) + اختيار الوديجتس.
+* Toggle لغة أعلى الكانفاس لتجربة RTL/LTR.
+
+### 4.6 Portfolio
+
+* Cases Table + Filters (Industry/Service/Format/Outcome/Year).
+* Case Editor:
+
+  * Meta (client/industry/region/year/services/deliverables/timeline/links)
+  * Sections (Challenge/Strategy/Solution/Execution/Impact)
+  * Media (Gallery/Videos/3D)
+  * Before-After slider inputs
+  * Press Kit Upload
+  * Featured toggle
+
+### 4.7 Blog
+
+* Posts Table + Editor (Cover, Body, Gallery, Tags, SEO).
+* States: Draft / Review / Scheduled / Published.
+
+### 4.8 Media
+
+* Grid with type filters (image/video/doc/3D).
+* Info panel: size, alt, usage references.
+
+### 4.9 Users & Roles (RBAC)
+
+* Roles: `admin`, `editor`, `content_creator`.
+* Permissions matrix (checkboxes granular).
+* Invite user (email/role) + reset password.
+
+### 4.10 Settings
+
+* Site meta (title/desc/og).
+* Languages (default/ar/en) + slugs prefixes.
+* Auth: session time, 2FA toggle.
+* Integrations (analytics, pixels).
+
+---
+
+## 5) Component Library (UI Kit)
+
+* Buttons: Primary (red filled), Secondary (red outline), Link.
+* Inputs: text, email, password (reveal), textarea, select, checkbox, radio, switch.
+* Navigation: navbar, sidebar, tabs, breadcrumbs, pagination.
+* Cards: service, case, blog, KPI.
+* Badges/Chips: filters (outline red).
+* Tables: sortable, selectable rows.
+* Overlays: modal, drawer, tooltip, toast.
+* Media: lightbox, video poster with play.
+* Sliders: carousel, before/after.
+
+States: default/hover/active/focus/disabled + RTL mirrors.
+
+---
+
+## 6) Routes Map (EN/AR)
+
+* `/` | `/ar/`
+* `/about` | `/ar/من-نحن`
+* `/brand-strategy` | `/ar/إستراتيجية-العلامة`
+* `/packaging` | `/ar/تصميم-العبوات`
+* `/brand-design` | `/ar/تصميم-الهوية`
+* `/advertising` | `/ar/الإعلانات`
+* `/digital-marketing` | `/ar/التسويق-الرقمي`
+* `/web` | `/ar/تصميم-المواقع`
+* `/case-studies` | `/ar/دراسات-الحالة`
+* `/case/:slug` | `/ar/اعمال/:slug`
+* `/blog` | `/ar/المدونة`
+* `/post/:slug` | `/ar/مقال/:slug`
+* `/contact` | `/ar/تواصل`
+* `/admin/login`
+* `/admin/*`
+
+---
+
+## 7) Data Models (JSON contracts)
+
+### 7.1 CaseStudy
+
+```json
+{
+  "id": "cs_123",
+  "slug": "crioro-packaging-refresh",
+  "lang": "en|ar",
+  "title": "Crioro — Packaging Refresh",
+  "summary": "Premium relaunch for F&B",
+  "client": "Crioro",
+  "industry": ["F&B", "Confectionery"],
+  "region": "MENA",
+  "year": 2025,
+  "services": ["Packaging", "Brand Design", "3D"],
+  "deliverables": ["Rigid box", "Foil", "Guideline"],
+  "timeline": "2025-Q1",
+  "links": {"website": "", "social": []},
+  "media": {"cover": "url", "gallery": ["url"], "videos": ["url"], "models3d": ["url"]},
+  "before_after": {"before": "url", "after": "url"},
+  "sections": {
+    "challenge": "...",
+    "strategy": "...",
+    "solution": {"brand": "...", "packaging": "...", "social_video": "...", "web": "...", "threeD": "..."},
+    "execution": "...",
+    "impact": [{"kpi": "+42% Sales", "value": 42, "unit": "%"}]
+  },
+  "featured": true,
+  "seo": {"title": "", "description": "", "og": {"image": "url"}},
+  "createdAt": "",
+  "updatedAt": ""
+}
+```
+
+### 7.2 BlogPost
+
+```json
+{
+  "id": "post_1",
+  "slug": "design-systems-for-fmcg",
+  "lang": "en|ar",
+  "title": "Design Systems for FMCG",
+  "cover": "url",
+  "body": "<richtext>",
+  "tags": ["branding", "packaging"],
+  "status": "draft|review|scheduled|published",
+  "scheduledAt": "",
+  "seo": {"title": "", "description": ""},
+  "createdBy": "user_1",
+  "createdAt": "",
+  "updatedAt": ""
+}
+```
+
+### 7.3 User & Roles
+
+```json
+{
+  "id": "user_1",
+  "email": "name@eibs.com",
+  "role": "admin|editor|content_creator",
+  "name": "",
+  "lastLogin": "",
+  "avatar": ""
+}
+```
+
+---
+
+## 8) RBAC Matrix (Visibility/Actions)
+
+| Module        | admin | editor  | content_creator   |
+| ------------- | ----- | ------- | ----------------- |
+| Theme         | full  | view    | -                 |
+| Typography    | full  | view    | -                 |
+| Widgets       | full  | view    | -                 |
+| Pages         | full  | publish | create/update own |
+| Portfolio     | full  | publish | create/update own |
+| Blog          | full  | publish | create/update own |
+| Media         | full  | full    | upload own        |
+| Users & Roles | full  | -       | -                 |
+| Settings      | full  | -       | -                 |
+
+---
+
+## 9) Accessibility & QA
+
+* AA contrast، Focus ring أحمر 2px، عناصر لمس ≥ 44px.
+* Alt لكل الصور، Subtitles للفيديوهات.
+* لا نصوص صورياً داخل الصور.
+* اختبار RTL/LTR على كل المكوّنات.
+
+---
+
+## 10) Figma Artboards (Checklist)
+
+1. **Public**: Header + Home + About + Brand Strategy + Packaging + Brand Design + Advertising + Digital Marketing + Web + Case Studies + Case Detail + Blog + Post + Contact + Footer (EN & AR).
+2. **Auth**: Login (EN & AR) + states.
+3. **CMS**: Dashboard / Theme / Typography / Widgets Library / Pages (Canvas) / Portfolio (List + Editor) / Blog (List + Editor) / Media / Users & Roles / Settings.
+4. **UI Kit**: Buttons, Inputs, Cards, Badges, Chips, Tables, Modals, Drawers, Tooltips, Toasts, Pagination, Carousel, Before/After.
+
+---
+
+## 11) Dev Notes (Ready-to-wire)
+
+* CSS variables من الـDesign Tokens.
+* Class naming BEM أو utility-first (Tailwind tokens mapping).
+* i18n JSON من قسم **i18n Keys**.
+* Routing وفق **Routes Map**.
+* Forms: منع التكرارات، رسائل خطأ واضحة، حالات Loading.
+
+---
+
+**انتهى — المواصفات كاملة وجاهزة للربط.**
