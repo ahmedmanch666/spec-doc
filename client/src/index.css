@@ -24,6 +24,12 @@
   --color-input: hsl(var(--input));
   --color-ring: hsl(var(--ring));
   
+  --color-primary-border: hsl(var(--primary-border));
+  --color-secondary-border: hsl(var(--secondary-border));
+  --color-destructive-border: hsl(var(--destructive-border));
+  --color-muted-border: hsl(var(--muted-border));
+  --color-accent-border: hsl(var(--accent-border));
+  
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
@@ -72,10 +78,24 @@
   --ring: var(--brand-red);
 
   --radius: 0.75rem; /* 12px */
+  
+  /* Additional Variables for Components */
+  --button-outline: rgba(0,0,0, .10);
+  --badge-outline: rgba(0,0,0, .05);
+  
+  /* Borders mapped to main colors for now */
+  --primary-border: var(--brand-red);
+  --secondary-border: var(--brand-light);
+  --destructive-border: 0 84.2% 60.2%;
+  --muted-border: var(--brand-light);
+  --accent-border: var(--brand-light);
+  
+  /* Elevate System */
+  --elevate-1: rgba(0,0,0, .03);
+  --elevate-2: rgba(0,0,0, .08);
 }
 
 .dark {
-  /* Dark mode mappings (optional for now, but good practice) */
   --background: 0 0% 7%;
   --foreground: 0 0% 98%;
   
@@ -103,6 +123,18 @@
   --border: 0 0% 15%;
   --input: 0 0% 15%;
   --ring: 350 96% 43%;
+  
+  --button-outline: rgba(255,255,255, .10);
+  --badge-outline: rgba(255,255,255, .05);
+  
+  --primary-border: 350 96% 43%;
+  --secondary-border: 0 0% 15%;
+  --destructive-border: 0 62.8% 30.6%;
+  --muted-border: 0 0% 15%;
+  --accent-border: 0 0% 15%;
+  
+  --elevate-1: rgba(255,255,255, .04);
+  --elevate-2: rgba(255,255,255, .09);
 }
 
 @layer base {
@@ -142,5 +174,61 @@
   
   .shadow-eibs {
     box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+  }
+
+  /* Elevate System Utilities */
+  .toggle-elevate::before,
+  .toggle-elevate-2::before {
+    content: "";
+    pointer-events: none;
+    position: absolute;
+    inset: 0px;
+    border-radius: inherit;
+    z-index: -1;
+  }
+
+  .toggle-elevate.toggle-elevated::before {
+    background-color: var(--elevate-2);
+  }
+
+  .border.toggle-elevate::before {
+    inset: -1px;
+  }
+
+  .hover-elevate:not(.no-default-hover-elevate),
+  .active-elevate:not(.no-default-active-elevate),
+  .hover-elevate-2:not(.no-default-hover-elevate),
+  .active-elevate-2:not(.no-default-active-elevate) {
+    position: relative;
+    z-index: 0;
+  }
+
+  .hover-elevate:not(.no-default-hover-elevate)::after,
+  .active-elevate:not(.no-default-active-elevate)::after,
+  .hover-elevate-2:not(.no-default-hover-elevate)::after,
+  .active-elevate-2:not(.no-default-active-elevate)::after {
+    content: "";
+    pointer-events: none;
+    position: absolute;
+    inset: 0px;
+    border-radius: inherit;
+    z-index: 999;
+  }
+
+  .hover-elevate:hover:not(.no-default-hover-elevate)::after,
+  .active-elevate:active:not(.no-default-active-elevate)::after {
+    background-color: var(--elevate-1);
+  }
+
+  .hover-elevate-2:hover:not(.no-default-hover-elevate)::after,
+  .active-elevate-2:active:not(.no-default-active-elevate)::after {
+    background-color: var(--elevate-2);
+  }
+
+  .border.hover-elevate:not(.no-hover-interaction-elevate)::after,
+  .border.active-elevate:not(.no-active-interaction-elevate)::after,
+  .border.hover-elevate-2:not(.no-hover-interaction-elevate)::after,
+  .border.active-elevate-2:not(.no-active-interaction-elevate)::after {
+    inset: -1px;
   }
 }
