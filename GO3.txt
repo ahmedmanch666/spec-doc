@@ -1,0 +1,247 @@
+You already analyzed the project and confirmed that:
+
+- The app runs in production at http://localhost:65130/
+- The public UI uses a Layout wrapper
+- AR/EN toggle works and flips RTL/LTR and fonts
+- Theme red/white tokens are wired
+- Home, Case Studies, Contact, and admin login/dashboard routes exist
+
+However, the site is still incomplete from a product/UI perspective.
+
+Please treat the following as the **authoritative spec** of what the EIBS site and CMS MUST contain, then:
+
+1) Compare the current implementation to this spec.
+2) List the gaps briefly.
+3) Implement the missing UI/pages/layouts/components to match the spec as much as possible WITHOUT breaking any of the working parts you found.
+
+=== SPEC OVERVIEW ===
+
+Brand & Design System
+- Colors (tokens must be enforced globally):
+  - Primary red: #D90429
+  - Primary red hover: #A3031F
+  - Background white: #FFFFFF
+  - Text dark: #111111
+  - Secondary text: #5A5A5A
+  - Borders: #EEEEEE
+- Typography:
+  - English: Inter or Poppins
+  - Arabic: Cairo or IBM Plex Sans Arabic
+- Layout:
+  - Clean white UI, red accents for CTAs/links, dark text, generous whitespace.
+  - 12-column container layout on desktop, responsive down to mobile.
+
+Bilingual Behavior
+- Global EN/AR language toggle in public header AND admin login.
+- When EN is selected:
+  - Direction: LTR
+  - Fonts: Inter/Poppins
+- When AR is selected:
+  - Direction: RTL
+  - Fonts: Cairo/IBM Arabic
+- All main public pages must have AR/EN content structure (even if copy is placeholder), with mirrored alignment in RTL.
+
+Public Site Structure (all wrapped in the main Layout with visible Header + Footer)
+
+HEADER (visible on all public routes):
+- Left/right depending on lang: red logo (EIBS), main navigation, language toggle (EN | AR), “Log in” button linking to /admin/login.
+- Navigation items:
+  - Home
+  - About
+  - Brand Strategy
+  - Packaging
+  - Brand Design
+  - Advertising
+  - Digital Marketing
+  - Web
+  - Case Studies
+  - Blog
+  - Contact
+
+FOOTER (visible on all public routes):
+- Sitemap-style links grouped by sections (About, Services, Case Studies, Blog, Contact).
+- Copyright line.
+- Optional social links.
+
+HOME PAGE:
+- Hero section:
+  - Strong headline, subheadline, two CTAs (primary red filled, secondary outline).
+- Services overview:
+  - Cards/sections previewing: Brand Strategy, Packaging, Brand Design, Advertising, Digital Marketing, Web.
+- Portfolio strip:
+  - Horizontal scroll or slider showing featured Case Studies.
+- Blog preview:
+  - At least 3 blog post cards (title, short summary, “Read more”).
+- Contact CTA:
+  - Short text + button to Contact page.
+
+ABOUT PAGE:
+- Layout with an intro about the agency.
+- Sections/links for: Who we are, How we work, Careers, Social Responsibility.
+
+BRAND STRATEGY PAGE:
+- Cards/list for:
+  - Brand Development
+  - Brand Positioning
+  - Brand Architecture
+  - Rebranding
+  - Brand Story
+  - Environment Branding
+  - Brand Consultation
+
+PACKAGING PAGE:
+- At least two main blocks:
+  - Packaging Design
+  - Product Shape Design
+- Show mockups or placeholders that visually indicate packaging work.
+
+BRAND DESIGN PAGE:
+- Cards for:
+  - Brand Naming
+  - Brand Logo
+  - Brand Identity
+  - Brand Guidelines
+  - Catalogue
+  - Company Profile Design
+
+ADVERTISING PAGE:
+- Section listing:
+  - Photography
+  - Film Making, TVCs
+  - Wayfinding Signage
+  - 3D Modeling & Animation
+  - Billboards & Airport Branding
+  - Ads Design
+- Optional video or hero visual.
+
+DIGITAL MARKETING PAGE:
+- Cards for:
+  - SEO
+  - Social Media Marketing
+  - Paid Marketing
+  - Influencer Marketing
+
+WEB PAGE:
+- Content for:
+  - UI/UX
+  - Web Design & Development
+- Show at least one web mockup screenshot component.
+
+CASE STUDIES (LIST PAGE):
+- Uses masonry-style layout with:
+  - Cards representing case studies (image/thumbnail, client, industry, year, region).
+  - Sticky filter bar:
+    - Filter by Industry, Service, Format, Outcome
+    - Text search
+  - Live counters (e.g., total projects, industries, etc.).
+- This page MUST feel like a proper portfolio hub, not just a bare list.
+
+CASE STUDY DETAIL PAGE:
+- Route like: /case/:slug
+- Sections:
+  - Hero media (image or video).
+  - Sidebar meta: client, industry, region, year, services, deliverables, links.
+  - Body sections:
+    - Challenge
+    - Strategy
+    - Solution (grouped: Brand, Packaging, Social/Video, Web, 3D if available)
+    - Execution
+    - Impact with KPIs (numbers).
+  - Gallery/lightbox for images.
+  - Previous/Next case navigation.
+
+BLOG LIST PAGE:
+- Grid or list of posts:
+  - Cover image
+  - Title
+  - Short excerpt
+  - “Read more” link to blog detail.
+- Basic filtering or at least tagging.
+
+BLOG DETAIL PAGE:
+- Cover image, title, meta (date, tags), rich text body.
+
+CONTACT PAGE:
+- Form:
+  - Name
+  - Email
+  - Message
+- Validation and success/error states.
+- Static contact info: email, phone(s).
+
+CMS / ADMIN (under /admin/*, using AdminLayout)
+
+LOGIN (/admin/login):
+- Branded red/white login:
+  - Email + Password fields
+  - Remember me
+  - Forgot password link
+  - Language toggle EN/AR
+- On success, redirect to /admin/dashboard.
+
+ADMIN LAYOUT:
+- Sidebar with sections:
+  - Dashboard
+  - Pages
+  - Portfolio (Case Studies)
+  - Blog
+  - Media
+  - Theme
+  - Typography
+  - Widgets
+  - Users & Roles
+  - Settings
+- Topbar with breadcrumbs, search, user menu.
+
+ADMIN DASHBOARD:
+- KPI cards:
+  - Number of pages, posts, case studies, media, drafts, pending.
+- Recent activity list.
+- Quick actions buttons (New Page, New Post, New Case, Upload).
+
+PORTFOLIO MANAGEMENT (ADMIN):
+- List of case studies with filters.
+- Editor form matching the Case Study spec above:
+  - Meta: client, industry, region, year, services, deliverables, links.
+  - Sections text fields.
+  - Media uploads (cover, gallery, videos).
+  - Featured toggle.
+
+BLOG MANAGEMENT (ADMIN):
+- List of posts (status: draft/review/published).
+- Editor for title, cover, body, tags, SEO meta.
+
+THEME PANEL:
+- Controls brand red and hover red (mapping to the CSS variables).
+- Preview of primary/secondary buttons and basic components.
+
+TYPOGRAPHY PANEL:
+- Choose AR/EN fonts from pre-set options and preview them with sample text.
+
+WIDGETS PANEL:
+- List of widgets usable on public pages (Hero, Services Grid, Portfolio Strip, Blog List, Contact Form).
+- Each widget has editable props (title, description, CTA label, number of items, etc.).
+
+USERS & ROLES:
+- At least two roles:
+  - admin: full access
+  - content_creator: can manage blog and maybe case content, but cannot change theme, typography, core layout, or users.
+
+=== WHAT TO DO NOW ===
+
+1) Use the existing code that you already validated as a starting point.
+2) Compare every public page and admin section against the spec above.
+3) For each gap (missing page, missing section, missing component, missing header/footer on a route, or missing AR/EN mirror), implement the minimum required UI to align with the spec.
+4) Reuse the existing mock data and types where possible rather than inventing a whole new data layer.
+5) Do NOT break what is already working (AR/EN toggle, existing Case Studies/Contact/CMS Login/Dashboard).
+6) After changes, build and run the production server again and verify:
+   - Header & footer render on ALL public routes.
+   - All public pages exist and show at least a basic, correct layout matching the spec.
+   - AR/EN toggle flips dir/fonts everywhere.
+   - /admin/login and /admin/dashboard still function.
+   - No critical console errors.
+
+Finally, output a short summary:
+- What was missing.
+- What you implemented.
+- Any TODOs left that require manual content or design tweaks.

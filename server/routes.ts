@@ -8,6 +8,14 @@ import {
   insertContactSubmissionSchema 
 } from "@shared/schema";
 
+function respondError(res: any, error: any, fallback: string) {
+  const status = error?.status || error?.statusCode;
+  if (status === 503) {
+    return res.status(503).json({ error: "Service temporarily unavailable" });
+  }
+  return res.status(500).json({ error: fallback });
+}
+
 export async function registerRoutes(
   httpServer: Server,
   app: Express
@@ -23,7 +31,7 @@ export async function registerRoutes(
       res.json(caseStudies);
     } catch (error) {
       console.error("Error fetching case studies:", error);
-      res.status(500).json({ error: "Failed to fetch case studies" });
+      respondError(res, error, "Failed to fetch case studies");
     }
   });
 
@@ -34,7 +42,7 @@ export async function registerRoutes(
       res.json(caseStudies);
     } catch (error) {
       console.error("Error fetching featured case studies:", error);
-      res.status(500).json({ error: "Failed to fetch featured case studies" });
+      respondError(res, error, "Failed to fetch featured case studies");
     }
   });
 
@@ -47,7 +55,7 @@ export async function registerRoutes(
       res.json(caseStudy);
     } catch (error) {
       console.error("Error fetching case study:", error);
-      res.status(500).json({ error: "Failed to fetch case study" });
+      respondError(res, error, "Failed to fetch case study");
     }
   });
 
@@ -61,7 +69,7 @@ export async function registerRoutes(
       res.json(posts);
     } catch (error) {
       console.error("Error fetching blog posts:", error);
-      res.status(500).json({ error: "Failed to fetch blog posts" });
+      respondError(res, error, "Failed to fetch blog posts");
     }
   });
 
@@ -74,7 +82,7 @@ export async function registerRoutes(
       res.json(post);
     } catch (error) {
       console.error("Error fetching blog post:", error);
-      res.status(500).json({ error: "Failed to fetch blog post" });
+      respondError(res, error, "Failed to fetch blog post");
     }
   });
 
@@ -92,7 +100,7 @@ export async function registerRoutes(
       res.status(201).json({ success: true, id: submission.id });
     } catch (error) {
       console.error("Error creating contact submission:", error);
-      res.status(500).json({ error: "Failed to submit contact form" });
+      respondError(res, error, "Failed to submit contact form");
     }
   });
 
@@ -110,7 +118,7 @@ export async function registerRoutes(
       res.status(201).json(caseStudy);
     } catch (error) {
       console.error("Error creating case study:", error);
-      res.status(500).json({ error: "Failed to create case study" });
+      respondError(res, error, "Failed to create case study");
     }
   });
 
@@ -123,7 +131,7 @@ export async function registerRoutes(
       res.json(caseStudy);
     } catch (error) {
       console.error("Error updating case study:", error);
-      res.status(500).json({ error: "Failed to update case study" });
+      respondError(res, error, "Failed to update case study");
     }
   });
 
@@ -133,7 +141,7 @@ export async function registerRoutes(
       res.status(204).send();
     } catch (error) {
       console.error("Error deleting case study:", error);
-      res.status(500).json({ error: "Failed to delete case study" });
+      respondError(res, error, "Failed to delete case study");
     }
   });
 
@@ -148,7 +156,7 @@ export async function registerRoutes(
       res.json(posts);
     } catch (error) {
       console.error("Error fetching blog posts:", error);
-      res.status(500).json({ error: "Failed to fetch blog posts" });
+      respondError(res, error, "Failed to fetch blog posts");
     }
   });
 
@@ -163,7 +171,7 @@ export async function registerRoutes(
       res.status(201).json(post);
     } catch (error) {
       console.error("Error creating blog post:", error);
-      res.status(500).json({ error: "Failed to create blog post" });
+      respondError(res, error, "Failed to create blog post");
     }
   });
 
@@ -176,7 +184,7 @@ export async function registerRoutes(
       res.json(post);
     } catch (error) {
       console.error("Error updating blog post:", error);
-      res.status(500).json({ error: "Failed to update blog post" });
+      respondError(res, error, "Failed to update blog post");
     }
   });
 
@@ -186,7 +194,7 @@ export async function registerRoutes(
       res.status(204).send();
     } catch (error) {
       console.error("Error deleting blog post:", error);
-      res.status(500).json({ error: "Failed to delete blog post" });
+      respondError(res, error, "Failed to delete blog post");
     }
   });
 
@@ -200,7 +208,7 @@ export async function registerRoutes(
       res.json(pages);
     } catch (error) {
       console.error("Error fetching pages:", error);
-      res.status(500).json({ error: "Failed to fetch pages" });
+      respondError(res, error, "Failed to fetch pages");
     }
   });
 
@@ -215,7 +223,7 @@ export async function registerRoutes(
       res.status(201).json(page);
     } catch (error) {
       console.error("Error creating page:", error);
-      res.status(500).json({ error: "Failed to create page" });
+      respondError(res, error, "Failed to create page");
     }
   });
 
@@ -228,7 +236,7 @@ export async function registerRoutes(
       res.json(page);
     } catch (error) {
       console.error("Error updating page:", error);
-      res.status(500).json({ error: "Failed to update page" });
+      respondError(res, error, "Failed to update page");
     }
   });
 
@@ -238,7 +246,7 @@ export async function registerRoutes(
       res.status(204).send();
     } catch (error) {
       console.error("Error deleting page:", error);
-      res.status(500).json({ error: "Failed to delete page" });
+      respondError(res, error, "Failed to delete page");
     }
   });
 
@@ -251,7 +259,7 @@ export async function registerRoutes(
       res.json(submissions);
     } catch (error) {
       console.error("Error fetching contact submissions:", error);
-      res.status(500).json({ error: "Failed to fetch contact submissions" });
+      respondError(res, error, "Failed to fetch contact submissions");
     }
   });
 
@@ -265,7 +273,7 @@ export async function registerRoutes(
       res.status(204).send();
     } catch (error) {
       console.error("Error updating contact submission status:", error);
-      res.status(500).json({ error: "Failed to update status" });
+      respondError(res, error, "Failed to update status");
     }
   });
 

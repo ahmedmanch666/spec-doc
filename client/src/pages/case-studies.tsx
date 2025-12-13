@@ -88,19 +88,18 @@ export default function CaseStudies() {
                  key={item.id}
                  className="break-inside-avoid"
                >
-                 <Link href={`/case/${item.slug}`}>
-                   <a className="group block" data-testid={`card-case-${item.id}`}>
-                     <div className="relative rounded-2xl overflow-hidden mb-4 bg-muted">
-                       <img 
-                         src={item.coverImage} 
-                         alt={item.title} 
-                         className="w-full h-auto object-cover transition-transform duration-700 group-hover:scale-105"
-                       />
-                       <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300 flex items-center justify-center opacity-0 group-hover:opacity-100">
-                         <span className="bg-white text-primary font-bold px-6 py-3 rounded-full translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
-                           {t('cta.view_case')}
-                         </span>
-                       </div>
+                <Link href={`/case/${item.slug}`} className="group block" data-testid={`card-case-${item.id}`}>
+                    <div className="relative rounded-2xl overflow-hidden mb-4 bg-muted">
+                      <img 
+                        src={item.coverImage} 
+                        alt={item.title} 
+                        className="w-full h-auto object-cover transition-transform duration-700 group-hover:scale-105"
+                      />
+                      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300 flex items-center justify-center opacity-0 group-hover:opacity-100">
+                        <span className="bg-white text-primary font-bold px-6 py-3 rounded-full translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
+                          {t('cta.view_case')}
+                        </span>
+                      </div>
                        
                        {/* Badges */}
                        <div className="absolute top-4 left-4 flex flex-wrap gap-2">
@@ -110,25 +109,24 @@ export default function CaseStudies() {
                            </span>
                          ))}
                        </div>
-                     </div>
-                     
-                     <div className="flex justify-between items-start">
-                       <div>
-                         <h3 className="text-xl font-bold mb-1 group-hover:text-primary transition-colors flex items-center gap-2" data-testid={`text-title-${item.id}`}>
-                           {item.title}
-                           <ArrowUpRight className="w-4 h-4 opacity-0 -translate-x-2 group-hover:translate-x-0 group-hover:opacity-100 transition-all text-primary" />
-                         </h3>
-                         <div className="flex gap-3 text-sm text-muted-foreground">
-                           <span data-testid={`text-client-${item.id}`}>{item.client}</span>
-                           <span>•</span>
-                           <span data-testid={`text-year-${item.id}`}>{item.year}</span>
-                           <span>•</span>
-                           <span data-testid={`text-region-${item.id}`}>{item.region}</span>
-                         </div>
-                       </div>
-                     </div>
-                   </a>
-                 </Link>
+                    </div>
+                    
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <h3 className="text-xl font-bold mb-1 group-hover:text-primary transition-colors flex items-center gap-2" data-testid={`text-title-${item.id}`}>
+                          {item.title}
+                          <ArrowUpRight className="w-4 h-4 opacity-0 -translate-x-2 group-hover:translate-x-0 group-hover:opacity-100 transition-all text-primary" />
+                        </h3>
+                        <div className="flex gap-3 text-sm text-muted-foreground">
+                          <span data-testid={`text-client-${item.id}`}>{item.client}</span>
+                          <span>•</span>
+                          <span data-testid={`text-year-${item.id}`}>{item.year}</span>
+                          <span>•</span>
+                          <span data-testid={`text-region-${item.id}`}>{item.region}</span>
+                        </div>
+                      </div>
+                    </div>
+                </Link>
                </motion.div>
              ))}
            </AnimatePresence>

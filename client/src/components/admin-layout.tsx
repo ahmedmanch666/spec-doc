@@ -32,18 +32,18 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
       {/* Sidebar */}
       <aside className="w-64 bg-card border-r flex flex-col fixed h-full z-20">
         <div className="h-16 flex items-center px-6 border-b">
-          <Link href="/admin/dashboard">
-            <a className="text-xl font-bold tracking-tighter text-primary">EIBS CMS</a>
-          </Link>
+          <Link href="/admin/dashboard" className="text-xl font-bold tracking-tighter text-primary">EIBS CMS</Link>
         </div>
         
         <div className="flex-1 overflow-y-auto py-4 px-3 space-y-1">
           {sidebarItems.map((item) => (
-            <Link key={item.href} href={item.href}>
-              <a className={`flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors ${location === item.href ? 'bg-primary text-white' : 'text-muted-foreground hover:bg-muted hover:text-foreground'}`}>
-                <item.icon className="h-4 w-4" />
-                {item.label}
-              </a>
+            <Link
+              key={item.href}
+              href={item.href}
+              className={`flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors ${location === item.href ? 'bg-primary text-white' : 'text-muted-foreground hover:bg-muted hover:text-foreground'}`}
+            >
+              <item.icon className="h-4 w-4" />
+              {item.label}
             </Link>
           ))}
         </div>

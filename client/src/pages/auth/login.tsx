@@ -25,8 +25,7 @@ export default function Login() {
         title: "Login Successful",
         description: "Redirecting to dashboard...",
       });
-      // In a real app, we would redirect to dashboard
-      // setLocation('/admin/dashboard'); 
+      setLocation('/admin/dashboard'); 
     }, 1500);
   };
 

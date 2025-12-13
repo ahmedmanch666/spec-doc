@@ -1,5 +1,6 @@
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
+import { isDbReady } from "./db";
 import { serveStatic } from "./static";
 import { createServer } from "http";
 
@@ -21,6 +22,23 @@ app.use(
 );
 
 app.use(express.urlencoded({ extended: false }));
+
+app.use((req, res, next) => {
+  try {
+    if (req.path.startsWith("/api")) {
+      if (!isDbReady()) {
+        return res.status(503).json({ error: "Service temporarily unavailable" });
+      }
+    }
+    next();
+  } catch (e: any) {
+    const status = e?.status ?? 500;
+    if (status === 503) {
+      return res.status(503).json({ error: "Service temporarily unavailable" });
+    }
+    next(e);
+  }
+});
 
 export function log(message: string, source = "express") {
   const formattedTime = new Date().toLocaleTimeString("en-US", {
@@ -85,14 +103,15 @@ app.use((req, res, next) => {
   // this serves both the API and the client.
   // It is the only port that is not firewalled.
   const port = parseInt(process.env.PORT || "5000", 10);
+  const host = process.env.HOST || "0.0.0.0";
   httpServer.listen(
     {
       port,
-      host: "0.0.0.0",
+      host,
       reusePort: true,
     },
     () => {
-      log(`serving on port ${port}`);
+      log(`serving on port ${port} (host ${host})`);
     },
   );
 })();

@@ -108,10 +108,8 @@ export default function Home() {
       <section className="container-custom">
         <div className="flex justify-between items-end mb-12">
            <h2 className="text-3xl md:text-4xl font-bold">{t('section.services')}</h2>
-           <Link href="/contact">
-             <a className="hidden md:flex items-center gap-2 text-primary font-bold hover:gap-3 transition-all" data-testid="link-view-all-services">
-               {t('cta.view_all')} {isRtl ? <ArrowRight className="rotate-180" /> : <ArrowRight />}
-             </a>
+           <Link href="/contact" className="hidden md:flex items-center gap-2 text-primary font-bold hover:gap-3 transition-all" data-testid="link-view-all-services">
+             {t('cta.view_all')} {isRtl ? <ArrowRight className="rotate-180" /> : <ArrowRight />}
            </Link>
         </div>
         
@@ -119,8 +117,7 @@ export default function Home() {
           {services.map((service, index) => {
             const Icon = iconMap[service.icon];
             return (
-              <Link key={service.id} href={`/${service.id}`}>
-                <a className="group" data-testid={`card-service-${service.id}`}>
+              <Link key={service.id} className="group" href={`/${service.id}`} data-testid={`card-service-${service.id}`}>
                   <Card className="h-full border border-border hover:border-primary/50 transition-all duration-300 hover:shadow-lg hover:-translate-y-1 bg-card">
                     <CardHeader>
                       <div className="w-12 h-12 rounded-xl bg-primary/5 flex items-center justify-center text-primary mb-4 group-hover:bg-primary group-hover:text-white transition-colors">
@@ -136,7 +133,6 @@ export default function Home() {
                       </p>
                     </CardContent>
                   </Card>
-                </a>
               </Link>
             );
           })}
@@ -157,8 +153,7 @@ export default function Home() {
         <div className="container-custom">
            <div className="flex gap-8 overflow-x-auto pb-8 snap-x scrollbar-hide -mx-6 px-6 md:mx-0 md:px-0">
               {featuredCases.map((item) => (
-                <Link key={item.id} href={`/case/${item.slug}`}>
-                  <a className="min-w-[300px] md:min-w-[400px] snap-center group" data-testid={`card-case-${item.id}`}>
+                <Link key={item.id} className="min-w-[300px] md:min-w-[400px] snap-center group" href={`/case/${item.slug}`} data-testid={`card-case-${item.id}`}>
                     <div className="aspect-[4/3] rounded-2xl overflow-hidden mb-6 relative shadow-md">
                       <img 
                         src={item.coverImage} 
@@ -181,7 +176,6 @@ export default function Home() {
                       </h3>
                       <p className="text-muted-foreground">{item.summary}</p>
                     </div>
-                  </a>
                 </Link>
               ))}
            </div>
@@ -196,8 +190,7 @@ export default function Home() {
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
            {blogPosts.slice(0, 3).map((post) => (
-             <Link key={post.id} href={`/post/${post.slug}`}>
-               <a className="group" data-testid={`card-blog-${post.id}`}>
+             <Link key={post.id} className="group" href={`/post/${post.slug}`} data-testid={`card-blog-${post.id}`}>
                  <div className="aspect-[16/10] rounded-2xl overflow-hidden mb-6 bg-muted">
                     <img 
                       src={post.coverImage} 
@@ -218,7 +211,6 @@ export default function Home() {
                      {post.summary}
                    </p>
                  </div>
-               </a>
              </Link>
            ))}
         </div>
