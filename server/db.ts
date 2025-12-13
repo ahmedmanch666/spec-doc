@@ -7,13 +7,14 @@ let dbInstance: ReturnType<typeof drizzle> | undefined;
 let poolInstance: InstanceType<typeof Pool> | undefined;
 
 export function isDbReady(): boolean {
-  return !!process.env.DATABASE_URL;
+  return !!(process.env.DATABASE_URL || process.env.POSTGRES_URL);
 }
 
 try {
-  if (process.env.DATABASE_URL) {
+  const url = process.env.DATABASE_URL || process.env.POSTGRES_URL;
+  if (url) {
     poolInstance = new Pool({
-      connectionString: process.env.DATABASE_URL,
+      connectionString: url,
     });
     dbInstance = drizzle(poolInstance, { schema });
   }
@@ -21,5 +22,5 @@ try {
   dbInstance = undefined;
 }
 
-export const pool = poolInstance!;
+export const pool = poolInstance;
 export const db = dbInstance;

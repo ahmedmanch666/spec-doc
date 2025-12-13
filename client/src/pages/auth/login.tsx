@@ -77,7 +77,7 @@ export default function Login() {
               <Label htmlFor="remember" className="text-sm font-normal text-muted-foreground">Remember me for 30 days</Label>
             </div>
             
-            <Button type="submit" className="w-full h-11 bg-primary text-white hover:bg-primary/90 font-bold" disabled={loading}>
+            <Button type="submit" className="w-full h-11 bg-primary text-primary-foreground hover:bg-primary/90 font-bold" disabled={loading}>
               {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               {t('cta.login')}
             </Button>

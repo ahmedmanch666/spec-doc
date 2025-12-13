@@ -8,7 +8,7 @@ This project is deployed on Vercel and auto-deploys on every push to `main`.
 
 Set these in Vercel **Project → Settings → Environment Variables**:
 
-- `DATABASE_URL` (Postgres connection string)
+- `DATABASE_URL` (Postgres connection string) **or** `POSTGRES_URL` (Vercel Postgres Storage)
 - `NODE_ENV=production`
 - `VITE_API_BASE=/api`
 
@@ -23,6 +23,15 @@ This repo uses Drizzle.
 
 - Push schema to the database:
   - `npm run db:push`
+
+- Seed initial data (admin user + sample content):
+  - `npm run db:seed`
+
+### Vercel Postgres (Storage)
+
+1. Create **Vercel Postgres** from **Storage** in Vercel.
+2. Connect it to this project.
+3. Vercel will provide `POSTGRES_URL` automatically. You can also set `DATABASE_URL` explicitly if desired.
 
 If `DATABASE_URL` is missing, API requests under `/api/*` will return `503` and the admin UI will show a friendly "Database not connected" empty-state.
 

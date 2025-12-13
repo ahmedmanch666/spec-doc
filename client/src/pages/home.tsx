@@ -74,12 +74,12 @@ export default function Home() {
             </p>
             <div className="flex flex-wrap gap-4 pt-4">
               <Link href="/contact">
-                <Button size="lg" className="rounded-full px-8 text-lg font-bold h-14 bg-primary text-white hover:bg-primary/90" data-testid="button-contact">
+                <Button size="lg" className="rounded-full px-8 text-lg font-bold h-14 bg-primary text-primary-foreground hover:bg-primary/90" data-testid="button-contact">
                   {t('cta.lets_talk')}
                 </Button>
               </Link>
               <Link href="/case-studies">
-                <Button variant="outline" size="lg" className="rounded-full px-8 text-lg font-bold h-14 border-2 border-primary text-primary hover:bg-primary hover:text-white" data-testid="button-view-cases">
+                <Button variant="outline" size="lg" className="rounded-full px-8 text-lg font-bold h-14 border-2 border-primary text-primary hover:bg-primary hover:text-primary-foreground" data-testid="button-view-cases">
                   {t('cta.view_case')}
                 </Button>
               </Link>
@@ -218,12 +218,12 @@ export default function Home() {
 
       {/* Contact CTA */}
       <section>
-        <div className="bg-primary rounded-3xl p-12 md:p-20 text-center text-white relative overflow-hidden">
+        <div className="bg-primary rounded-3xl p-12 md:p-20 text-center text-primary-foreground relative overflow-hidden">
           <div className="relative z-10 max-w-2xl mx-auto space-y-8">
             <h2 className="text-4xl md:text-5xl font-bold">
               {language === 'en' ? 'Ready to Start?' : 'جاهز للبدء؟'}
             </h2>
-            <p className="text-white/80 text-xl leading-relaxed">
+            <p className="text-primary-foreground/80 text-xl leading-relaxed">
               {language === 'en' 
                 ? "Let's build something extraordinary together. Reach out to discuss your next project."
                 : "دعنا نبني شيئاً استثنائياً معاً. تواصل معنا لمناقشة مشروعك القادم."}

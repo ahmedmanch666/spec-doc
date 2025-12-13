@@ -153,7 +153,7 @@ export default function Contact() {
               <Button 
                 type="submit" 
                 size="lg" 
-                className="w-full h-12 font-bold bg-primary hover:bg-primary/90 text-white" 
+                className="w-full h-12 font-bold bg-primary hover:bg-primary/90 text-primary-foreground" 
                 disabled={mutation.isPending}
                 data-testid="button-submit"
               >

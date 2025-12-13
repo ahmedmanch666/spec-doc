@@ -1,5 +1,6 @@
 import express, { type Request, type Response, type NextFunction } from "express";
 import { registerRoutes } from "./routes";
+import { isDbReady } from "./db";
 
 export const app = express();
 
@@ -55,7 +56,7 @@ app.use((req, res, next) => {
 
 // health endpoint
 app.get("/api/health", (_req: Request, res: Response) => {
-  res.json({ ok: true, ts: Date.now(), dbReady: !!process.env.DATABASE_URL });
+  res.json({ ok: true, ts: Date.now(), dbReady: isDbReady() });
 });
 
 // register application routes

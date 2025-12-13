@@ -1,8 +1,37 @@
 import { storage } from "./storage";
-import type { InsertCaseStudy, InsertBlogPost } from "@shared/schema";
+import type { InsertCaseStudy, InsertBlogPost, InsertPage, InsertUser } from "@shared/schema";
+import { isDbReady } from "./db";
 
 async function seed() {
   console.log("🌱 Seeding database...");
+
+  if (!isDbReady()) {
+    console.log("⏭️  Database not connected. Set DATABASE_URL or POSTGRES_URL then run db:push and db:seed.");
+    process.exit(0);
+  }
+
+  // Seed Admin User
+  const adminUser: InsertUser = {
+    email: "admin@eibs.com",
+    password: "admin",
+    name: "Admin User",
+    role: "admin",
+    avatar: null,
+    lastLogin: null,
+  };
+
+  try {
+    const existingAdmin = await storage.getUserByEmail(adminUser.email);
+    if (!existingAdmin) {
+      await storage.createUser(adminUser);
+      console.log(`✅ Created admin user: ${adminUser.email}`);
+    } else {
+      console.log(`⏭️  Admin user already exists: ${adminUser.email}`);
+    }
+  } catch (err) {
+    console.error("❌ Failed to seed admin user:", err);
+    throw err;
+  }
 
   // Seed Case Studies
   const caseStudiesData: InsertCaseStudy[] = [
@@ -189,6 +218,40 @@ async function seed() {
       console.log(`✅ Created blog post: ${post.title}`);
     } else {
       console.log(`⏭️  Blog post already exists: ${post.title}`);
+    }
+  }
+
+  // Seed Pages
+  const pagesData: InsertPage[] = [
+    {
+      slug: "about",
+      lang: "en",
+      title: "About",
+      content: [{}],
+      status: "published",
+      seoTitle: "About",
+      seoDescription: "About page",
+      createdBy: null,
+    },
+    {
+      slug: "privacy",
+      lang: "en",
+      title: "Privacy Policy",
+      content: [{}],
+      status: "published",
+      seoTitle: "Privacy Policy",
+      seoDescription: "Privacy policy page",
+      createdBy: null,
+    },
+  ];
+
+  for (const page of pagesData) {
+    const existing = await storage.getPageBySlug(page.slug);
+    if (!existing) {
+      await storage.createPage(page);
+      console.log(`✅ Created page: ${page.title}`);
+    } else {
+      console.log(`⏭️  Page already exists: ${page.title}`);
     }
   }
 
