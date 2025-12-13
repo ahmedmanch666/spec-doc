@@ -7,31 +7,30 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import type { CaseStudy } from "@shared/schema";
+import { fetchJson, HttpError } from "@/lib/http";
 
 async function fetchCases(): Promise<CaseStudy[]> {
-  const res = await fetch("/api/case-studies", { credentials: "include" });
-  if (!res.ok) throw new Error("Failed to fetch case studies");
-  return res.json();
+  return fetchJson<CaseStudy[]>("/api/admin/case-studies", { credentials: "include" });
 }
 
 async function patchCase(id: string, data: Partial<CaseStudy>): Promise<CaseStudy> {
-  const res = await fetch(`/api/admin/case-studies/${id}`, {
+  return fetchJson<CaseStudy>(`/api/admin/case-studies/${id}`, {
     method: "PATCH",
     headers: { "Content-Type": "application/json" },
     credentials: "include",
     body: JSON.stringify(data),
   });
-  if (!res.ok) throw new Error("Failed to update case study");
-  return res.json();
 }
 
 export default function PortfolioEdit() {
   const [, params] = useRoute("/admin/portfolio/:id");
   const queryClient = useQueryClient();
-  const { data: cases = [], isLoading, isError } = useQuery({
+  const { data: cases = [], isLoading, isError, error } = useQuery({
     queryKey: ["admin-portfolio"],
     queryFn: fetchCases,
   });
+
+  const isDbMissing = error instanceof HttpError && error.status === 503;
 
   const current = useMemo(() => cases.find((c) => c.id === params?.id), [cases, params]);
   const [form, setForm] = useState<Partial<CaseStudy> | null>(null);
@@ -60,6 +59,16 @@ export default function PortfolioEdit() {
   });
 
   if (isLoading) return <p className="text-muted-foreground">Loading...</p>;
+  if (isError && isDbMissing) {
+    return (
+      <div className="rounded-lg border bg-muted/20 p-4">
+        <p className="font-medium">Database not connected</p>
+        <p className="text-sm text-muted-foreground mt-1">
+          Connect a Postgres database and set <code>DATABASE_URL</code> in Vercel.
+        </p>
+      </div>
+    );
+  }
   if (isError) return <p className="text-destructive">Failed to load</p>;
   if (!current || !form) return <p className="text-muted-foreground">Case not found</p>;
 

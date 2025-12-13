@@ -5,20 +5,19 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
 import type { BlogPost } from "@shared/schema";
+import { fetchJson, HttpError } from "@/lib/http";
 
 async function fetchPosts(): Promise<BlogPost[]> {
-  const res = await fetch("/api/admin/blog-posts", { credentials: "include" });
-  if (!res.ok) {
-    throw new Error("Failed to fetch blog posts");
-  }
-  return res.json();
+  return fetchJson<BlogPost[]>("/api/admin/blog-posts", { credentials: "include" });
 }
 
 export default function BlogAdmin() {
-  const { data, isLoading, isError } = useQuery<BlogPost[]>({
+  const { data, isLoading, isError, error } = useQuery<BlogPost[]>({
     queryKey: ["admin-blog-posts"],
     queryFn: fetchPosts,
   });
+
+  const isDbMissing = error instanceof HttpError && error.status === 503;
 
   return (
     <div className="space-y-8">
@@ -30,10 +29,16 @@ export default function BlogAdmin() {
         </CardHeader>
         <CardContent>
           {isLoading && <p className="text-muted-foreground">Loading posts...</p>}
-          {isError && (
-            <p className="text-destructive">
-              Could not load posts. Ensure the server and database are configured.
-            </p>
+          {isError && isDbMissing && (
+            <div className="rounded-lg border bg-muted/20 p-4">
+              <p className="font-medium">Database not connected</p>
+              <p className="text-sm text-muted-foreground mt-1">
+                Connect a Postgres database and set <code>DATABASE_URL</code> in Vercel.
+              </p>
+            </div>
+          )}
+          {isError && !isDbMissing && (
+            <p className="text-destructive">Failed to load posts.</p>
           )}
           {!!data && (
             <Table>

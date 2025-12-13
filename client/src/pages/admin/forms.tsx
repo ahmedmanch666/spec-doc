@@ -3,27 +3,27 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { fetchJson, HttpError } from "@/lib/http";
 
 export default function FormsAdmin() {
   const queryClient = useQueryClient();
-  const { data: submissions = [], isLoading, isError } = useQuery({
+  const { data: submissions = [], isLoading, isError, error } = useQuery({
     queryKey: ["admin-contact-submissions"],
     queryFn: async () => {
-      const res = await fetch("/api/admin/contact-submissions", { credentials: "include" });
-      if (!res.ok) throw new Error("Failed to fetch submissions");
-      return res.json();
+      return fetchJson<any[]>("/api/admin/contact-submissions", { credentials: "include" });
     },
   });
 
+  const isDbMissing = error instanceof HttpError && error.status === 503;
+
   const mutation = useMutation({
     mutationFn: async ({ id, status }: { id: string; status: string }) => {
-      const res = await fetch(`/api/admin/contact-submissions/${id}/status`, {
+      await fetchJson<void>(`/api/admin/contact-submissions/${id}/status`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
         body: JSON.stringify({ status }),
       });
-      if (!res.ok) throw new Error("Failed to update status");
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["admin-contact-submissions"] }),
   });
@@ -37,7 +37,15 @@ export default function FormsAdmin() {
         </CardHeader>
         <CardContent>
           {isLoading && <p className="text-muted-foreground">Loading submissions...</p>}
-          {isError && <p className="text-destructive">Failed to load submissions.</p>}
+          {isError && isDbMissing && (
+            <div className="rounded-lg border bg-muted/20 p-4">
+              <p className="font-medium">Database not connected</p>
+              <p className="text-sm text-muted-foreground mt-1">
+                Connect a Postgres database and set <code>DATABASE_URL</code> in Vercel.
+              </p>
+            </div>
+          )}
+          {isError && !isDbMissing && <p className="text-destructive">Failed to load submissions.</p>}
           {!!submissions && submissions.length > 0 ? (
             <Table>
               <TableHeader>

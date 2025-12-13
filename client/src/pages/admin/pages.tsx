@@ -5,20 +5,19 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
 import type { Page } from "@shared/schema";
+import { fetchJson, HttpError } from "@/lib/http";
 
 async function fetchPages(): Promise<Page[]> {
-  const res = await fetch("/api/admin/pages", { credentials: "include" });
-  if (!res.ok) {
-    throw new Error("Failed to fetch pages");
-  }
-  return res.json();
+  return fetchJson<Page[]>("/api/admin/pages", { credentials: "include" });
 }
 
 export default function PagesAdmin() {
-  const { data, isLoading, isError } = useQuery<Page[]>({
+  const { data, isLoading, isError, error } = useQuery<Page[]>({
     queryKey: ["admin-pages"],
     queryFn: fetchPages,
   });
+
+  const isDbMissing = error instanceof HttpError && error.status === 503;
 
   return (
     <div className="space-y-8">
@@ -30,10 +29,16 @@ export default function PagesAdmin() {
         </CardHeader>
         <CardContent>
           {isLoading && <p className="text-muted-foreground">Loading pages...</p>}
-          {isError && (
-            <p className="text-destructive">
-              Could not load pages. Ensure the server and database are configured.
-            </p>
+          {isError && isDbMissing && (
+            <div className="rounded-lg border bg-muted/20 p-4">
+              <p className="font-medium">Database not connected</p>
+              <p className="text-sm text-muted-foreground mt-1">
+                Connect a Postgres database and set <code>DATABASE_URL</code> in Vercel.
+              </p>
+            </div>
+          )}
+          {isError && !isDbMissing && (
+            <p className="text-destructive">Failed to load pages.</p>
           )}
           {!!data && (
             <Table>

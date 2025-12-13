@@ -6,31 +6,30 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import type { Page } from "@shared/schema";
+import { fetchJson, HttpError } from "@/lib/http";
 
 async function fetchPages(): Promise<Page[]> {
-  const res = await fetch("/api/admin/pages", { credentials: "include" });
-  if (!res.ok) throw new Error("Failed to fetch pages");
-  return res.json();
+  return fetchJson<Page[]>("/api/admin/pages", { credentials: "include" });
 }
 
 async function patchPage(id: string, data: Partial<Page>): Promise<Page> {
-  const res = await fetch(`/api/admin/pages/${id}`, {
+  return fetchJson<Page>(`/api/admin/pages/${id}`, {
     method: "PATCH",
     headers: { "Content-Type": "application/json" },
     credentials: "include",
     body: JSON.stringify(data),
   });
-  if (!res.ok) throw new Error("Failed to update page");
-  return res.json();
 }
 
 export default function PagesEdit() {
   const [, params] = useRoute("/admin/pages/:id");
   const queryClient = useQueryClient();
-  const { data: pages = [], isLoading, isError } = useQuery({
+  const { data: pages = [], isLoading, isError, error } = useQuery({
     queryKey: ["admin-pages"],
     queryFn: fetchPages,
   });
+
+  const isDbMissing = error instanceof HttpError && error.status === 503;
 
   const current = useMemo(() => pages.find((p) => p.id === params?.id), [pages, params]);
   const [form, setForm] = useState<Partial<Page> | null>(null);
@@ -55,6 +54,16 @@ export default function PagesEdit() {
   });
 
   if (isLoading) return <p className="text-muted-foreground">Loading...</p>;
+  if (isError && isDbMissing) {
+    return (
+      <div className="rounded-lg border bg-muted/20 p-4">
+        <p className="font-medium">Database not connected</p>
+        <p className="text-sm text-muted-foreground mt-1">
+          Connect a Postgres database and set <code>DATABASE_URL</code> in Vercel.
+        </p>
+      </div>
+    );
+  }
   if (isError) return <p className="text-destructive">Failed to load</p>;
   if (!current || !form) return <p className="text-muted-foreground">Page not found</p>;
 

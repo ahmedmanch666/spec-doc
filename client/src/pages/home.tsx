@@ -37,7 +37,7 @@ export default function Home() {
     <div className="flex flex-col gap-24 pb-24">
       {/* Hero Section */}
       <section className="relative min-h-[80vh] flex items-center pt-20">
-        <div className="container-custom grid lg:grid-cols-2 gap-12 items-center">
+        <div className="grid lg:grid-cols-2 gap-12 items-center">
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -105,7 +105,7 @@ export default function Home() {
       </section>
 
       {/* Services Preview */}
-      <section className="container-custom">
+      <section>
         <div className="flex justify-between items-end mb-12">
            <h2 className="text-3xl md:text-4xl font-bold">{t('section.services')}</h2>
            <Link href="/contact" className="hidden md:flex items-center gap-2 text-primary font-bold hover:gap-3 transition-all" data-testid="link-view-all-services">
@@ -141,7 +141,7 @@ export default function Home() {
 
       {/* Portfolio Strip */}
       <section className="w-full overflow-hidden bg-muted/30 py-24">
-        <div className="container-custom mb-12 flex justify-between items-center">
+        <div className="mb-12 flex justify-between items-center">
           <h2 className="text-3xl md:text-4xl font-bold">{t('section.featured_work')}</h2>
            <Link href="/case-studies">
              <Button variant="link" className="text-primary font-bold text-lg p-0 h-auto" data-testid="button-view-all-cases">
@@ -150,8 +150,8 @@ export default function Home() {
            </Link>
         </div>
         
-        <div className="container-custom">
-           <div className="flex gap-8 overflow-x-auto pb-8 snap-x scrollbar-hide -mx-6 px-6 md:mx-0 md:px-0">
+        <div>
+           <div className="flex gap-8 overflow-x-auto pb-8 snap-x scrollbar-hide -mx-4 px-4 sm:-mx-6 sm:px-6 md:mx-0 md:px-0">
               {featuredCases.map((item) => (
                 <Link key={item.id} className="min-w-[300px] md:min-w-[400px] snap-center group" href={`/case/${item.slug}`} data-testid={`card-case-${item.id}`}>
                     <div className="aspect-[4/3] rounded-2xl overflow-hidden mb-6 relative shadow-md">
@@ -183,7 +183,7 @@ export default function Home() {
       </section>
 
       {/* Blog Preview */}
-      <section className="container-custom">
+      <section>
         <div className="flex justify-between items-end mb-12">
            <h2 className="text-3xl md:text-4xl font-bold">{t('section.latest_insights')}</h2>
         </div>
@@ -217,7 +217,7 @@ export default function Home() {
       </section>
 
       {/* Contact CTA */}
-      <section className="container-custom">
+      <section>
         <div className="bg-primary rounded-3xl p-12 md:p-20 text-center text-white relative overflow-hidden">
           <div className="relative z-10 max-w-2xl mx-auto space-y-8">
             <h2 className="text-4xl md:text-5xl font-bold">

@@ -36,7 +36,7 @@ export default function CaseStudies() {
     <div className="min-h-screen bg-background">
       {/* Header / Filter Bar */}
       <div className="sticky top-20 z-40 bg-background/95 backdrop-blur border-b py-4">
-        <div className="container-custom flex flex-col lg:flex-row gap-6 lg:items-center justify-between">
+        <div className="flex flex-col lg:flex-row gap-6 lg:items-center justify-between">
           <div className="flex items-center gap-8 overflow-x-auto pb-2 lg:pb-0 scrollbar-hide">
              <span className="font-bold text-lg whitespace-nowrap" data-testid="text-count">{filteredCases.length} {t('nav.case_studies')}</span>
              <div className="h-6 w-px bg-border hidden lg:block" />
@@ -75,7 +75,7 @@ export default function CaseStudies() {
       </div>
 
       {/* Grid */}
-      <div className="container-custom py-12">
+      <div className="py-12">
         <div className="columns-1 md:columns-2 lg:columns-3 gap-8 space-y-8">
            <AnimatePresence>
              {filteredCases.map((item) => (

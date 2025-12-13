@@ -6,31 +6,30 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import type { BlogPost } from "@shared/schema";
+import { fetchJson, HttpError } from "@/lib/http";
 
 async function fetchPosts(): Promise<BlogPost[]> {
-  const res = await fetch("/api/admin/blog-posts", { credentials: "include" });
-  if (!res.ok) throw new Error("Failed to fetch blog posts");
-  return res.json();
+  return fetchJson<BlogPost[]>("/api/admin/blog-posts", { credentials: "include" });
 }
 
 async function patchPost(id: string, data: Partial<BlogPost>): Promise<BlogPost> {
-  const res = await fetch(`/api/admin/blog-posts/${id}`, {
+  return fetchJson<BlogPost>(`/api/admin/blog-posts/${id}`, {
     method: "PATCH",
     headers: { "Content-Type": "application/json" },
     credentials: "include",
     body: JSON.stringify(data),
   });
-  if (!res.ok) throw new Error("Failed to update blog post");
-  return res.json();
 }
 
 export default function BlogEdit() {
   const [, params] = useRoute("/admin/blog/:id");
   const queryClient = useQueryClient();
-  const { data: posts = [], isLoading, isError } = useQuery({
+  const { data: posts = [], isLoading, isError, error } = useQuery({
     queryKey: ["admin-blog-posts"],
     queryFn: fetchPosts,
   });
+
+  const isDbMissing = error instanceof HttpError && error.status === 503;
 
   const current = useMemo(() => posts.find((p) => p.id === params?.id), [posts, params]);
   const [form, setForm] = useState<Partial<BlogPost> | null>(null);
@@ -58,6 +57,16 @@ export default function BlogEdit() {
   });
 
   if (isLoading) return <p className="text-muted-foreground">Loading...</p>;
+  if (isError && isDbMissing) {
+    return (
+      <div className="rounded-lg border bg-muted/20 p-4">
+        <p className="font-medium">Database not connected</p>
+        <p className="text-sm text-muted-foreground mt-1">
+          Connect a Postgres database and set <code>DATABASE_URL</code> in Vercel.
+        </p>
+      </div>
+    );
+  }
   if (isError) return <p className="text-destructive">Failed to load</p>;
   if (!current || !form) return <p className="text-muted-foreground">Post not found</p>;
 

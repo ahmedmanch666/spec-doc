@@ -108,7 +108,7 @@ app.use((req, res, next) => {
     {
       port,
       host,
-      reusePort: true,
+      ...(process.platform === "win32" ? {} : { reusePort: true }),
     },
     () => {
       log(`serving on port ${port} (host ${host})`);

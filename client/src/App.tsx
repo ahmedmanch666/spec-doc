@@ -28,7 +28,7 @@ import PagesEdit from "@/pages/admin/pages-edit";
 
 // Placeholder components for other pages
 const PlaceholderPage = ({ title }: { title: string }) => (
-  <div className="container-custom py-24 min-h-[60vh] flex flex-col items-center justify-center text-center">
+  <div className="py-24 min-h-[60vh] flex flex-col items-center justify-center text-center">
     <h1 className="text-4xl font-bold mb-4" style={{ color: '#111111' }}>{title}</h1>
     <p className="text-muted-foreground max-w-md">
       This page is under construction as part of the prototype.
