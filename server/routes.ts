@@ -10,8 +10,12 @@ import {
 
 function respondError(res: any, error: any, fallback: string) {
   const status = error?.status || error?.statusCode;
-  if (status === 503) {
-    return res.status(503).json({ error: "Service temporarily unavailable" });
+  const code = error?.code;
+  if (status === 503 || code === "42P01") {
+    return res.status(503).json({
+      error: "Database not connected or not initialized",
+      hint: "Connect Vercel Postgres and run db:push (and optionally db:seed).",
+    });
   }
   return res.status(500).json({ error: fallback });
 }

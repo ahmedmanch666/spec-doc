@@ -29,6 +29,26 @@ app.use((req, res, next) => {
   next();
 });
 
+// Gate API requests when DB is not configured
+app.use((req, res, next) => {
+  try {
+    if (req.path.startsWith("/api")) {
+      if (!isDbReady()) {
+        return res.status(503).json({
+          error: "Database not connected or not initialized",
+          hint: "Connect Vercel Postgres and run db:push (and optionally db:seed).",
+        });
+      }
+    }
+    next();
+  } catch {
+    return res.status(503).json({
+      error: "Database not connected or not initialized",
+      hint: "Connect Vercel Postgres and run db:push (and optionally db:seed).",
+    });
+  }
+});
+
 // simple request logger for /api
 app.use((req, res, next) => {
   const start = Date.now();
