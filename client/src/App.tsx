@@ -68,7 +68,9 @@ function Router() {
       </Route>
 
       {/* Main Routes - With Layout */}
-      <Route path="/" component={Home} />
+      <Route path="/">
+        <Layout><Home /></Layout>
+      </Route>
       <Route path="/about">
         <Layout><PlaceholderPage title="About Us" /></Layout>
       </Route>
@@ -91,13 +93,17 @@ function Router() {
         <Layout><PlaceholderPage title="Web Design" /></Layout>
       </Route>
       
-      <Route path="/case-studies" component={CaseStudies} />
+      <Route path="/case-studies">
+        <Layout><CaseStudies /></Layout>
+      </Route>
       
       <Route path="/blog">
         <Layout><PlaceholderPage title="Blog" /></Layout>
       </Route>
       
-      <Route path="/contact" component={Contact} />
+      <Route path="/contact">
+        <Layout><Contact /></Layout>
+      </Route>
       
       {/* Dynamic Routes */}
       <Route path="/case/:slug">
