@@ -43,28 +43,28 @@ function Router() {
       <Route path="/admin/login" component={Login} />
       
       {/* Admin Routes - Admin Layout */}
-      <Route path="/admin/:rest*">
-         <AdminLayout>
-           <Switch>
-             <Route path="/admin/dashboard" component={Dashboard} />
-             <Route path="/admin/pages" component={PagesAdmin} />
-             <Route path="/admin/pages/:id" component={PagesEdit} />
-             <Route path="/admin/portfolio" component={PortfolioAdmin} />
-             <Route path="/admin/portfolio/:id" component={PortfolioEdit} />
-             <Route path="/admin/blog" component={BlogAdmin} />
-             <Route path="/admin/blog/:id" component={BlogEdit} />
-             <Route path="/admin/media" component={MediaAdmin} />
-             <Route path="/admin/forms" component={FormsAdmin} />
-             <Route path="/admin/theme" component={ThemePanel} />
-             <Route path="/admin/typography" component={TypographyPanel} />
-             <Route path="/admin/widgets" component={WidgetsLibrary} />
-             <Route path="/admin/users" component={UsersAdmin} />
-             <Route path="/admin/settings" component={SettingsAdmin} />
-             <Route path="/admin/:any">
-               {(params) => <PlaceholderPage title={`Admin: ${params.any}`} />}
-             </Route>
-           </Switch>
-         </AdminLayout>
+      <Route path="/admin" nest>
+        <AdminLayout>
+          <Switch>
+            <Route path="/dashboard" component={Dashboard} />
+            <Route path="/pages" component={PagesAdmin} />
+            <Route path="/pages/:id" component={PagesEdit} />
+            <Route path="/portfolio" component={PortfolioAdmin} />
+            <Route path="/portfolio/:id" component={PortfolioEdit} />
+            <Route path="/blog" component={BlogAdmin} />
+            <Route path="/blog/:id" component={BlogEdit} />
+            <Route path="/media" component={MediaAdmin} />
+            <Route path="/forms" component={FormsAdmin} />
+            <Route path="/theme" component={ThemePanel} />
+            <Route path="/typography" component={TypographyPanel} />
+            <Route path="/widgets" component={WidgetsLibrary} />
+            <Route path="/users" component={UsersAdmin} />
+            <Route path="/settings" component={SettingsAdmin} />
+            <Route path="/:any">
+              {(params) => <PlaceholderPage title={`Admin: ${params.any}`} />}
+            </Route>
+          </Switch>
+        </AdminLayout>
       </Route>
 
       {/* Main Routes - With Layout */}
