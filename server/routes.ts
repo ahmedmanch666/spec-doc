@@ -111,6 +111,17 @@ export async function registerRoutes(
   // ============================================
   // ADMIN API - Case Studies (Protected - TODO: Add auth middleware)
   // ============================================
+  app.get("/api/admin/case-studies", async (req, res) => {
+    try {
+      const lang = req.query.lang as string | undefined;
+      const caseStudies = await storage.getAllCaseStudies(lang);
+      res.json(caseStudies);
+    } catch (error) {
+      console.error("Error fetching admin case studies:", error);
+      respondError(res, error, "Failed to fetch case studies");
+    }
+  });
+
   app.post("/api/admin/case-studies", async (req, res) => {
     try {
       const validationResult = insertCaseStudySchema.safeParse(req.body);
