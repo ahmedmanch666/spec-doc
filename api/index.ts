@@ -1,4 +1,8 @@
-import app from "../server/app";
+import { createRequire } from "module";
+
+const require = createRequire(import.meta.url);
+const appModule = require("../dist/app.cjs");
+const app = appModule?.default ?? appModule;
 
 export default function handler(req: any, res: any) {
   try {
