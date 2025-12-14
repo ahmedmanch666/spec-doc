@@ -46,13 +46,14 @@ function Router() {
       <Route path="/admin" nest>
         <AdminLayout>
           <Switch>
+            <Route path="/" component={Dashboard} />
             <Route path="dashboard" component={Dashboard} />
-            <Route path="pages" component={PagesAdmin} />
             <Route path="pages/:id" component={PagesEdit} />
-            <Route path="portfolio" component={PortfolioAdmin} />
             <Route path="portfolio/:id" component={PortfolioEdit} />
-            <Route path="blog" component={BlogAdmin} />
             <Route path="blog/:id" component={BlogEdit} />
+            <Route path="pages" component={PagesAdmin} />
+            <Route path="portfolio" component={PortfolioAdmin} />
+            <Route path="blog" component={BlogAdmin} />
             <Route path="media" component={MediaAdmin} />
             <Route path="forms" component={FormsAdmin} />
             <Route path="theme" component={ThemePanel} />
