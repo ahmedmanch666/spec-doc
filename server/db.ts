@@ -1,6 +1,6 @@
 import { drizzle } from "drizzle-orm/node-postgres";
-import pkg from "pg";
-const { Pool } = pkg;
+import * as pg from "pg";
+const { Pool } = pg;
 import * as schema from "@shared/schema";
 
 let dbInstance: ReturnType<typeof drizzle> | undefined;
