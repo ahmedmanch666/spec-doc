@@ -1,8 +1,7 @@
-export default async function handler(req: any, res: any) {
-  try {
-    const mod = await import("../server/app");
-    const app = (mod as any).default;
+import app from "../server/app";
 
+export default function handler(req: any, res: any) {
+  try {
     (app as any)(req, res, (err: any) => {
       if (err) {
         console.error("Unhandled error in API handler:", err);
