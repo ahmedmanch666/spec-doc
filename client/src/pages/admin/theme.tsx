@@ -1,40 +1,39 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { getTheme, updateTheme, type ThemeConfig } from "@/lib/api";
+import { applyThemeToDocument, hexToHslTuple } from "@/lib/theme";
 
 export default function ThemePanel() {
+  const queryClient = useQueryClient();
+  const { data, isLoading } = useQuery<ThemeConfig>({
+    queryKey: ["theme"],
+    queryFn: getTheme,
+  });
+
   const [primary, setPrimary] = useState("#e10600");
   const [hover, setHover] = useState("#b20500");
 
-  function hexToHslTuple(hex: string): string {
-    const clean = hex.replace("#", "");
-    const r = parseInt(clean.substring(0, 2), 16) / 255;
-    const g = parseInt(clean.substring(2, 4), 16) / 255;
-    const b = parseInt(clean.substring(4, 6), 16) / 255;
-    const max = Math.max(r, g, b), min = Math.min(r, g, b);
-    let h = 0;
-    let s = 0;
-    const l = (max + min) / 2;
-    const d = max - min;
-    if (d !== 0) {
-      s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
-      switch (max) {
-        case r: h = (g - b) / d + (g < b ? 6 : 0); break;
-        case g: h = (b - r) / d + 2; break;
-        case b: h = (r - g) / d + 4; break;
-      }
-      h /= 6;
+  useEffect(() => {
+    if (data) {
+      setPrimary(data.primary);
+      setHover(data.hover);
     }
-    return `${Math.round(h * 360)} ${Math.round(s * 100)}% ${Math.round(l * 100)}%`;
-  }
+  }, [data]);
 
-  function applyTheme() {
-    const root = document.documentElement;
-    root.style.setProperty("--brand-red", hexToHslTuple(primary));
-    root.style.setProperty("--brand-red-hover", hexToHslTuple(hover));
-    root.style.setProperty("--ring", hexToHslTuple(primary));
-    alert("Applied to preview");
+  const mutation = useMutation({
+    mutationFn: (theme: ThemeConfig) => updateTheme(theme),
+    onSuccess: (theme) => {
+      applyThemeToDocument(theme);
+      queryClient.setQueryData(["theme"], theme);
+    },
+  });
+
+  function handleApply() {
+    const theme: ThemeConfig = { primary, hover };
+    mutation.mutate(theme);
   }
 
   return (
@@ -74,7 +73,7 @@ export default function ThemePanel() {
 
             <div className="space-y-3">
               <p className="text-sm text-muted-foreground">
-                Preview buttons with current values
+                {isLoading ? "Loading theme..." : "Preview buttons with current values"}
               </p>
               <div className="flex flex-wrap gap-3">
                 <Button
@@ -100,8 +99,20 @@ export default function ThemePanel() {
             </div>
 
             <div className="flex gap-3 pt-2">
-              <Button className="bg-primary text-white font-bold" onClick={applyTheme}>Apply</Button>
-              <Button variant="outline">Preview on site</Button>
+              <Button 
+                className="bg-primary text-white font-bold" 
+                onClick={handleApply}
+                disabled={mutation.isPending}
+              >
+                {mutation.isPending ? "Saving..." : "Save & Apply"}
+              </Button>
+              <Button 
+                variant="outline"
+                type="button"
+                onClick={() => applyThemeToDocument({ primary, hover })}
+              >
+                Preview on site
+              </Button>
             </div>
           </CardContent>
         </Card>

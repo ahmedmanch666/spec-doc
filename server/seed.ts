@@ -1,6 +1,7 @@
 import { storage } from "./storage";
 import type { InsertCaseStudy, InsertBlogPost, InsertPage, InsertUser } from "@shared/schema";
 import { isDbReady } from "./db";
+import { hashPassword } from "./password";
 
 async function seed() {
   console.log("🌱 Seeding database...");
@@ -13,7 +14,7 @@ async function seed() {
   // Seed Admin User
   const adminUser: InsertUser = {
     email: "admin@eibs.com",
-    password: "admin",
+    password: await hashPassword("admin"),
     name: "Admin User",
     role: "admin",
     avatar: null,
@@ -24,7 +25,7 @@ async function seed() {
     const existingAdmin = await storage.getUserByEmail(adminUser.email);
     if (!existingAdmin) {
       await storage.createUser(adminUser);
-      console.log(`✅ Created admin user: ${adminUser.email}`);
+      console.log(`✅ Created admin user: ${adminUser.email} (password: admin)`);
     } else {
       console.log(`⏭️  Admin user already exists: ${adminUser.email}`);
     }

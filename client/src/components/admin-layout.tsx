@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link, useLocation } from 'wouter';
 import { useI18n } from '@/lib/i18n';
+import { useAuth } from '@/lib/auth';
 import { Button } from '@/components/ui/button';
 import { 
   LayoutDashboard, FileText, Briefcase, PenTool, Image as ImageIcon, 
@@ -12,6 +13,7 @@ import { Input } from '@/components/ui/input';
 export function AdminLayout({ children }: { children: React.ReactNode }) {
   const { direction } = useI18n();
   const [location] = useLocation();
+  const { user, logout } = useAuth();
 
   const sidebarItems = [
     { icon: LayoutDashboard, label: 'Dashboard', href: '/admin/dashboard' },
@@ -49,12 +51,14 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
         </div>
 
         <div className="p-4 border-t">
-          <Link href="/admin/login">
-            <Button variant="outline" className="w-full justify-start gap-2 text-destructive hover:text-destructive hover:bg-destructive/10 border-destructive/20">
-              <LogOut className="h-4 w-4" />
-              Log out
-            </Button>
-          </Link>
+          <Button 
+            variant="outline" 
+            className="w-full justify-start gap-2 text-destructive hover:text-destructive hover:bg-destructive/10 border-destructive/20"
+            onClick={logout}
+          >
+            <LogOut className="h-4 w-4" />
+            Log out
+          </Button>
         </div>
       </aside>
 
@@ -80,12 +84,14 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
             
             <div className="flex items-center gap-3 pl-4 border-l">
               <div className="text-right hidden md:block">
-                <p className="text-sm font-medium">Admin User</p>
-                <p className="text-xs text-muted-foreground">admin@eibs.com</p>
+                <p className="text-sm font-medium">{user?.name || "User"}</p>
+                <p className="text-xs text-muted-foreground">{user?.email || ""}</p>
               </div>
               <Avatar>
-                <AvatarImage src="https://github.com/shadcn.png" />
-                <AvatarFallback>AD</AvatarFallback>
+                <AvatarImage src={user?.avatar || undefined} />
+                <AvatarFallback>
+                  {user?.name?.split(" ").map(n => n[0]).join("").toUpperCase() || "U"}
+                </AvatarFallback>
               </Avatar>
             </div>
           </div>

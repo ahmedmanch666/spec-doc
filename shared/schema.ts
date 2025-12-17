@@ -146,3 +146,14 @@ export const insertContactSubmissionSchema = createInsertSchema(contactSubmissio
 });
 export type InsertContactSubmission = z.infer<typeof insertContactSubmissionSchema>;
 export type ContactSubmission = typeof contactSubmissions.$inferSelect;
+
+// ============================================
+// SETTINGS (key/value store for site-wide config like theme)
+// ============================================
+export const settings = pgTable("settings", {
+  key: text("key").primaryKey(),
+  value: json("value").$type<any>(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
+export type Setting = typeof settings.$inferSelect;

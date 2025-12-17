@@ -5,6 +5,7 @@ import {
   blogPosts, 
   pages, 
   contactSubmissions,
+  settings,
   type User,
   type InsertUser,
   type CaseStudy,
@@ -14,7 +15,8 @@ import {
   type Page,
   type InsertPage,
   type ContactSubmission,
-  type InsertContactSubmission
+  type InsertContactSubmission,
+  type Setting
 } from "@shared/schema";
 import { eq, desc, and } from "drizzle-orm";
 import { randomUUID } from "crypto";
@@ -55,6 +57,10 @@ export interface IStorage {
   getAllContactSubmissions(): Promise<ContactSubmission[]>;
   createContactSubmission(submission: InsertContactSubmission): Promise<ContactSubmission>;
   updateContactSubmissionStatus(id: string, status: string): Promise<void>;
+
+  // Settings
+  getSetting(key: string): Promise<Setting | undefined>;
+  setSetting(key: string, value: any): Promise<Setting>;
 }
 
 function assertDB() {
@@ -267,6 +273,28 @@ export class DatabaseStorage implements IStorage {
   async updateContactSubmissionStatus(id: string, status: string): Promise<void> {
     const dbc = assertDB();
     await dbc.update(contactSubmissions).set({ status }).where(eq(contactSubmissions.id, id));
+  }
+
+  // ============================================
+  // SETTINGS
+  // ============================================
+  async getSetting(key: string): Promise<Setting | undefined> {
+    const dbc = assertDB();
+    const [row] = await dbc.select().from(settings).where(eq(settings.key, key)).limit(1);
+    return row;
+  }
+
+  async setSetting(key: string, value: any): Promise<Setting> {
+    const dbc = assertDB();
+    const [row] = await dbc
+      .insert(settings)
+      .values({ key, value, updatedAt: new Date() })
+      .onConflictDoUpdate({
+        target: settings.key,
+        set: { value, updatedAt: new Date() },
+      })
+      .returning();
+    return row;
   }
 }
 

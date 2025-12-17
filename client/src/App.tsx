@@ -1,11 +1,15 @@
-import { Switch, Route } from "wouter";
+import { Switch, Route, useLocation } from "wouter";
+import { useEffect } from "react";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { I18nProvider } from "@/lib/i18n";
+import { AuthProvider, useAuth } from "@/lib/auth";
+import { ThemeProvider } from "@/lib/theme-provider";
 import { Layout } from "@/components/layout";
 import { AdminLayout } from "@/components/admin-layout";
+import { Spinner } from "@/components/ui/spinner";
 import Home from "@/pages/home";
 import CaseStudies from "@/pages/case-studies";
 import Contact from "@/pages/contact";
@@ -36,93 +40,151 @@ const PlaceholderPage = ({ title }: { title: string }) => (
   </div>
 );
 
+// Protected Route Component
+function ProtectedRoute({ children }: { children: React.ReactNode }) {
+  const { isAuthenticated, isLoading } = useAuth();
+  const [, setLocation] = useLocation();
+
+  useEffect(() => {
+    if (!isLoading && !isAuthenticated) {
+      setLocation("/admin/login");
+    }
+  }, [isAuthenticated, isLoading, setLocation]);
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Spinner className="h-8 w-8" />
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return null;
+  }
+
+  return <>{children}</>;
+}
+
 function Router() {
   return (
     <Switch>
       {/* Auth Routes - No Layout */}
       <Route path="/admin/login" component={Login} />
       
-      {/* Admin Routes - Admin Layout */}
+      {/* Admin Routes - Admin Layout (Protected) */}
       <Route path="/admin">
-        <AdminLayout>
-          <Dashboard />
-        </AdminLayout>
+        <ProtectedRoute>
+          <AdminLayout>
+            <Dashboard />
+          </AdminLayout>
+        </ProtectedRoute>
       </Route>
       <Route path="/admin/dashboard">
-        <AdminLayout>
-          <Dashboard />
-        </AdminLayout>
+        <ProtectedRoute>
+          <AdminLayout>
+            <Dashboard />
+          </AdminLayout>
+        </ProtectedRoute>
       </Route>
       <Route path="/admin/pages/:id" component={(props: any) => (
-        <AdminLayout>
-          <PagesEdit {...props} />
-        </AdminLayout>
+        <ProtectedRoute>
+          <AdminLayout>
+            <PagesEdit {...props} />
+          </AdminLayout>
+        </ProtectedRoute>
       )} />
       <Route path="/admin/portfolio/:id" component={(props: any) => (
-        <AdminLayout>
-          <PortfolioEdit {...props} />
-        </AdminLayout>
+        <ProtectedRoute>
+          <AdminLayout>
+            <PortfolioEdit {...props} />
+          </AdminLayout>
+        </ProtectedRoute>
       )} />
       <Route path="/admin/blog/:id" component={(props: any) => (
-        <AdminLayout>
-          <BlogEdit {...props} />
-        </AdminLayout>
+        <ProtectedRoute>
+          <AdminLayout>
+            <BlogEdit {...props} />
+          </AdminLayout>
+        </ProtectedRoute>
       )} />
       <Route path="/admin/pages">
-        <AdminLayout>
-          <PagesAdmin />
-        </AdminLayout>
+        <ProtectedRoute>
+          <AdminLayout>
+            <PagesAdmin />
+          </AdminLayout>
+        </ProtectedRoute>
       </Route>
       <Route path="/admin/portfolio">
-        <AdminLayout>
-          <PortfolioAdmin />
-        </AdminLayout>
+        <ProtectedRoute>
+          <AdminLayout>
+            <PortfolioAdmin />
+          </AdminLayout>
+        </ProtectedRoute>
       </Route>
       <Route path="/admin/blog">
-        <AdminLayout>
-          <BlogAdmin />
-        </AdminLayout>
+        <ProtectedRoute>
+          <AdminLayout>
+            <BlogAdmin />
+          </AdminLayout>
+        </ProtectedRoute>
       </Route>
       <Route path="/admin/media">
-        <AdminLayout>
-          <MediaAdmin />
-        </AdminLayout>
+        <ProtectedRoute>
+          <AdminLayout>
+            <MediaAdmin />
+          </AdminLayout>
+        </ProtectedRoute>
       </Route>
       <Route path="/admin/forms">
-        <AdminLayout>
-          <FormsAdmin />
-        </AdminLayout>
+        <ProtectedRoute>
+          <AdminLayout>
+            <FormsAdmin />
+          </AdminLayout>
+        </ProtectedRoute>
       </Route>
       <Route path="/admin/theme">
-        <AdminLayout>
-          <ThemePanel />
-        </AdminLayout>
+        <ProtectedRoute>
+          <AdminLayout>
+            <ThemePanel />
+          </AdminLayout>
+        </ProtectedRoute>
       </Route>
       <Route path="/admin/typography">
-        <AdminLayout>
-          <TypographyPanel />
-        </AdminLayout>
+        <ProtectedRoute>
+          <AdminLayout>
+            <TypographyPanel />
+          </AdminLayout>
+        </ProtectedRoute>
       </Route>
       <Route path="/admin/widgets">
-        <AdminLayout>
-          <WidgetsLibrary />
-        </AdminLayout>
+        <ProtectedRoute>
+          <AdminLayout>
+            <WidgetsLibrary />
+          </AdminLayout>
+        </ProtectedRoute>
       </Route>
       <Route path="/admin/users">
-        <AdminLayout>
-          <UsersAdmin />
-        </AdminLayout>
+        <ProtectedRoute>
+          <AdminLayout>
+            <UsersAdmin />
+          </AdminLayout>
+        </ProtectedRoute>
       </Route>
       <Route path="/admin/settings">
-        <AdminLayout>
-          <SettingsAdmin />
-        </AdminLayout>
+        <ProtectedRoute>
+          <AdminLayout>
+            <SettingsAdmin />
+          </AdminLayout>
+        </ProtectedRoute>
       </Route>
       <Route path="/admin/:rest*">
         {(params) => (
-          <AdminLayout>
-            <PlaceholderPage title={`Admin: ${(params as any)["rest*"] ?? ""}`} />
-          </AdminLayout>
+          <ProtectedRoute>
+            <AdminLayout>
+              <PlaceholderPage title={`Admin: ${(params as any)["rest*"] ?? ""}`} />
+            </AdminLayout>
+          </ProtectedRoute>
         )}
       </Route>
 
@@ -182,8 +244,12 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
         <I18nProvider>
-          <Toaster />
-          <Router />
+          <AuthProvider>
+            <ThemeProvider>
+              <Toaster />
+              <Router />
+            </ThemeProvider>
+          </AuthProvider>
         </I18nProvider>
       </TooltipProvider>
     </QueryClientProvider>

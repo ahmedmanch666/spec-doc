@@ -1,12 +1,15 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
+import { authenticateToken, requireRole, generateToken, type AuthRequest } from "./auth";
+import { comparePassword } from "./password";
 import { 
   insertCaseStudySchema, 
   insertBlogPostSchema,
   insertPageSchema,
   insertContactSubmissionSchema 
 } from "@shared/schema";
+import { z } from "zod";
 
 function respondError(res: any, error: any, fallback: string) {
   const status = error?.status || error?.statusCode;
@@ -109,9 +112,127 @@ export async function registerRoutes(
   });
 
   // ============================================
-  // ADMIN API - Case Studies (Protected - TODO: Add auth middleware)
+  // PUBLIC API - Theme (read-only, used by public site)
   // ============================================
-  app.get("/api/admin/case-studies", async (req, res) => {
+  app.get("/api/theme", async (_req, res) => {
+    try {
+      const setting = await storage.getSetting("theme");
+      const value = setting?.value ?? {
+        primary: "#e10600",
+        hover: "#b20500",
+      };
+      res.json(value);
+    } catch (error) {
+      console.error("Error fetching theme:", error);
+      respondError(res, error, "Failed to fetch theme");
+    }
+  });
+
+  // ============================================
+  // AUTH API - Login/Logout/Me
+  // ============================================
+  app.post("/api/auth/login", async (req, res) => {
+    try {
+      const { email, password } = req.body;
+
+      if (!email || !password) {
+        return res.status(400).json({ error: "Email and password are required" });
+      }
+
+      const user = await storage.getUserByEmail(email);
+      if (!user) {
+        return res.status(401).json({ error: "Invalid email or password" });
+      }
+
+      const isValidPassword = await comparePassword(password, user.password);
+      if (!isValidPassword) {
+        return res.status(401).json({ error: "Invalid email or password" });
+      }
+
+      // Update last login
+      await storage.updateUserLastLogin(user.id);
+
+      // Generate token
+      const token = generateToken(user);
+
+      // Return user data (without password) and token
+      const { password: _, ...userWithoutPassword } = user;
+      res.json({
+        user: userWithoutPassword,
+        token,
+      });
+    } catch (error) {
+      console.error("Error during login:", error);
+      respondError(res, error, "Failed to login");
+    }
+  });
+
+  app.get("/api/auth/me", authenticateToken, async (req: AuthRequest, res) => {
+    try {
+      if (!req.user) {
+        return res.status(401).json({ error: "Unauthorized" });
+      }
+
+      const { password: _, ...userWithoutPassword } = req.user;
+      res.json(userWithoutPassword);
+    } catch (error) {
+      console.error("Error fetching user:", error);
+      respondError(res, error, "Failed to fetch user");
+    }
+  });
+
+  // ============================================
+  // ADMIN API - Theme (update)
+  // ============================================
+  const themeSchema = z.object({
+    primary: z.string().regex(/^#([0-9a-fA-F]{6})$/, "Invalid hex color"),
+    hover: z.string().regex(/^#([0-9a-fA-F]{6})$/, "Invalid hex color"),
+  });
+
+  app.put("/api/admin/theme", authenticateToken, requireRole("admin"), async (req, res) => {
+    try {
+      const parseResult = themeSchema.safeParse(req.body);
+      if (!parseResult.success) {
+        return res.status(400).json({ error: "Invalid theme data", details: parseResult.error });
+      }
+      const theme = parseResult.data;
+      const saved = await storage.setSetting("theme", theme);
+      res.json(saved.value);
+    } catch (error) {
+      console.error("Error updating theme:", error);
+      respondError(res, error, "Failed to update theme");
+    }
+  });
+
+  // ============================================
+  // ADMIN API - Dashboard Stats (Protected)
+  // ============================================
+  app.get("/api/admin/stats", authenticateToken, async (_req, res) => {
+    try {
+      const [pages, caseStudiesList, blogPostsList, contactSubmissions] =
+        await Promise.all([
+          storage.getAllPages(),
+          storage.getAllCaseStudies(),
+          storage.getAllBlogPosts(undefined, undefined),
+          storage.getAllContactSubmissions(),
+        ]);
+
+      res.json({
+        pages: pages.length,
+        caseStudies: caseStudiesList.length,
+        blogPosts: blogPostsList.length,
+        contactSubmissions: contactSubmissions.length,
+      });
+    } catch (error) {
+      console.error("Error fetching admin stats:", error);
+      respondError(res, error, "Failed to fetch admin stats");
+    }
+  });
+
+  // ============================================
+  // ADMIN API - Case Studies (Protected)
+  // ============================================
+  app.get("/api/admin/case-studies", authenticateToken, async (req, res) => {
     try {
       const lang = req.query.lang as string | undefined;
       const caseStudies = await storage.getAllCaseStudies(lang);
@@ -122,7 +243,7 @@ export async function registerRoutes(
     }
   });
 
-  app.post("/api/admin/case-studies", async (req, res) => {
+  app.post("/api/admin/case-studies", authenticateToken, requireRole("admin", "editor"), async (req, res) => {
     try {
       const validationResult = insertCaseStudySchema.safeParse(req.body);
       if (!validationResult.success) {
@@ -137,7 +258,7 @@ export async function registerRoutes(
     }
   });
 
-  app.patch("/api/admin/case-studies/:id", async (req, res) => {
+  app.patch("/api/admin/case-studies/:id", authenticateToken, requireRole("admin", "editor"), async (req, res) => {
     try {
       const caseStudy = await storage.updateCaseStudy(req.params.id, req.body);
       if (!caseStudy) {
@@ -150,7 +271,7 @@ export async function registerRoutes(
     }
   });
 
-  app.delete("/api/admin/case-studies/:id", async (req, res) => {
+  app.delete("/api/admin/case-studies/:id", authenticateToken, requireRole("admin"), async (req, res) => {
     try {
       await storage.deleteCaseStudy(req.params.id);
       res.status(204).send();
@@ -161,9 +282,9 @@ export async function registerRoutes(
   });
 
   // ============================================
-  // ADMIN API - Blog Posts (Protected - TODO: Add auth middleware)
+  // ADMIN API - Blog Posts (Protected)
   // ============================================
-  app.get("/api/admin/blog-posts", async (req, res) => {
+  app.get("/api/admin/blog-posts", authenticateToken, async (req, res) => {
     try {
       const lang = req.query.lang as string | undefined;
       const status = req.query.status as string | undefined;
@@ -175,7 +296,7 @@ export async function registerRoutes(
     }
   });
 
-  app.post("/api/admin/blog-posts", async (req, res) => {
+  app.post("/api/admin/blog-posts", authenticateToken, requireRole("admin", "editor", "content_creator"), async (req, res) => {
     try {
       const validationResult = insertBlogPostSchema.safeParse(req.body);
       if (!validationResult.success) {
@@ -190,7 +311,7 @@ export async function registerRoutes(
     }
   });
 
-  app.patch("/api/admin/blog-posts/:id", async (req, res) => {
+  app.patch("/api/admin/blog-posts/:id", authenticateToken, requireRole("admin", "editor", "content_creator"), async (req, res) => {
     try {
       const post = await storage.updateBlogPost(req.params.id, req.body);
       if (!post) {
@@ -203,7 +324,7 @@ export async function registerRoutes(
     }
   });
 
-  app.delete("/api/admin/blog-posts/:id", async (req, res) => {
+  app.delete("/api/admin/blog-posts/:id", authenticateToken, requireRole("admin", "editor"), async (req, res) => {
     try {
       await storage.deleteBlogPost(req.params.id);
       res.status(204).send();
@@ -214,9 +335,9 @@ export async function registerRoutes(
   });
 
   // ============================================
-  // ADMIN API - Pages (Protected - TODO: Add auth middleware)
+  // ADMIN API - Pages (Protected)
   // ============================================
-  app.get("/api/admin/pages", async (req, res) => {
+  app.get("/api/admin/pages", authenticateToken, async (req, res) => {
     try {
       const lang = req.query.lang as string | undefined;
       const pages = await storage.getAllPages(lang);
@@ -227,7 +348,7 @@ export async function registerRoutes(
     }
   });
 
-  app.post("/api/admin/pages", async (req, res) => {
+  app.post("/api/admin/pages", authenticateToken, requireRole("admin", "editor"), async (req, res) => {
     try {
       const validationResult = insertPageSchema.safeParse(req.body);
       if (!validationResult.success) {
@@ -242,7 +363,7 @@ export async function registerRoutes(
     }
   });
 
-  app.patch("/api/admin/pages/:id", async (req, res) => {
+  app.patch("/api/admin/pages/:id", authenticateToken, requireRole("admin", "editor"), async (req, res) => {
     try {
       const page = await storage.updatePage(req.params.id, req.body);
       if (!page) {
@@ -255,7 +376,7 @@ export async function registerRoutes(
     }
   });
 
-  app.delete("/api/admin/pages/:id", async (req, res) => {
+  app.delete("/api/admin/pages/:id", authenticateToken, requireRole("admin"), async (req, res) => {
     try {
       await storage.deletePage(req.params.id);
       res.status(204).send();
@@ -266,9 +387,9 @@ export async function registerRoutes(
   });
 
   // ============================================
-  // ADMIN API - Contact Submissions (Protected - TODO: Add auth middleware)
+  // ADMIN API - Contact Submissions (Protected)
   // ============================================
-  app.get("/api/admin/contact-submissions", async (req, res) => {
+  app.get("/api/admin/contact-submissions", authenticateToken, async (req, res) => {
     try {
       const submissions = await storage.getAllContactSubmissions();
       res.json(submissions);
@@ -278,7 +399,7 @@ export async function registerRoutes(
     }
   });
 
-  app.patch("/api/admin/contact-submissions/:id/status", async (req, res) => {
+  app.patch("/api/admin/contact-submissions/:id/status", authenticateToken, requireRole("admin", "editor"), async (req, res) => {
     try {
       const { status } = req.body;
       if (!status) {

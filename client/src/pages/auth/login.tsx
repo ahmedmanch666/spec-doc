@@ -1,32 +1,32 @@
 import React, { useState } from 'react';
-import { useLocation } from 'wouter';
 import { useI18n } from '@/lib/i18n';
+import { useAuth } from '@/lib/auth';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Globe, Loader2 } from 'lucide-react';
-import { useToast } from '@/hooks/use-toast';
 
 export default function Login() {
   const { t, language, setLanguage, direction } = useI18n();
-  const [, setLocation] = useLocation();
-  const { toast } = useToast();
+  const { login } = useAuth();
   const [loading, setLoading] = useState(false);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [rememberMe, setRememberMe] = useState(false);
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     
-    // Simulate API call
-    setTimeout(() => {
+    try {
+      await login(email, password);
+      // Navigation is handled by AuthProvider
+    } catch (error) {
+      // Error is handled by AuthProvider toast
+    } finally {
       setLoading(false);
-      toast({
-        title: "Login Successful",
-        description: "Redirecting to dashboard...",
-      });
-      setLocation('/admin/dashboard'); 
-    }, 1500);
+    }
   };
 
   const toggleLanguage = () => {
@@ -59,7 +59,16 @@ export default function Login() {
             <div className="space-y-4">
                <div className="space-y-2">
                  <Label htmlFor="email">{t('form.email')}</Label>
-                 <Input id="email" type="email" placeholder="name@eibs.com" required className="h-11" />
+                 <Input 
+                   id="email" 
+                   type="email" 
+                   placeholder="name@eibs.com" 
+                   required 
+                   className="h-11"
+                   value={email}
+                   onChange={(e) => setEmail(e.target.value)}
+                   disabled={loading}
+                 />
                </div>
                <div className="space-y-2">
                  <div className="flex items-center justify-between">
@@ -68,12 +77,25 @@ export default function Login() {
                      Forgot password?
                    </a>
                  </div>
-                 <Input id="password" type="password" required className="h-11" />
+                 <Input 
+                   id="password" 
+                   type="password" 
+                   required 
+                   className="h-11"
+                   value={password}
+                   onChange={(e) => setPassword(e.target.value)}
+                   disabled={loading}
+                 />
                </div>
             </div>
             
             <div className="flex items-center space-x-2">
-              <Checkbox id="remember" />
+              <Checkbox 
+                id="remember" 
+                checked={rememberMe}
+                onCheckedChange={(checked) => setRememberMe(checked === true)}
+                disabled={loading}
+              />
               <Label htmlFor="remember" className="text-sm font-normal text-muted-foreground">Remember me for 30 days</Label>
             </div>
             

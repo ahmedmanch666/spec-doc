@@ -1,14 +1,21 @@
 import React from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { FileText, Briefcase, PenTool, ImageIcon, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { getAdminStats, type AdminStats } from '@/lib/api';
 
 export default function Dashboard() {
+  const { data, isLoading, isError } = useQuery<AdminStats>({
+    queryKey: ['admin-stats'],
+    queryFn: getAdminStats,
+  });
+
   const stats = [
-    { title: 'Total Pages', value: '12', icon: FileText, change: '+2 this week' },
-    { title: 'Case Studies', value: '24', icon: Briefcase, change: '+1 this week' },
-    { title: 'Blog Posts', value: '8', icon: PenTool, change: '+3 this month' },
-    { title: 'Media Items', value: '142', icon: ImageIcon, change: '+12 this week' },
+    { title: 'Total Pages', value: data?.pages ?? '—', icon: FileText, change: '' },
+    { title: 'Case Studies', value: data?.caseStudies ?? '—', icon: Briefcase, change: '' },
+    { title: 'Blog Posts', value: data?.blogPosts ?? '—', icon: PenTool, change: '' },
+    { title: 'Contact Messages', value: data?.contactSubmissions ?? '—', icon: ImageIcon, change: '' },
   ];
 
   return (
@@ -32,10 +39,18 @@ export default function Dashboard() {
               <stat.icon className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{stat.value}</div>
-              <p className="text-xs text-muted-foreground">
-                {stat.change}
-              </p>
+              <div className="text-2xl font-bold">
+                {isLoading ? '...' : stat.value}
+              </div>
+              {isError ? (
+                <p className="text-xs text-destructive">
+                  Failed to load
+                </p>
+              ) : (
+                <p className="text-xs text-muted-foreground">
+                  {stat.change || 'Live data from CMS'}
+                </p>
+              )}
             </CardContent>
           </Card>
         ))}
